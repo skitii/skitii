@@ -46,6 +46,10 @@
   <noscript>
     <link rel="stylesheet" href="/skitii/css/noscript.css">
   </noscript>
+
+  <!--pjax：防止跳转页面音乐暂停-->
+  <script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script>
+
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
@@ -84,6 +88,7 @@
         <li class="menu-item menu-item-home"><a href="/skitii/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
         <li class="menu-item menu-item-about"><a href="/skitii/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
         <li class="menu-item menu-item-tags"><a href="/skitii/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/skitii/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
         <li class="menu-item menu-item-archives"><a href="/skitii/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
   </ul>
 </nav>
@@ -111,7 +116,7 @@
           Overview
         </li>
       </ul>
-
+	
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
@@ -133,6 +138,16 @@
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/skitii/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/skitii/tags/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
   </nav>
 </div>
 
@@ -140,8 +155,13 @@
 
         </div>
       </div>
+
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=260 height=450 src="//music.163.com/outchain/player?type=0&id=7179117219&auto=1&height=430"></iframe>
+
     </div>
+  
   </aside>
+  
   <div class="sidebar-dimmer"></div>
 
 
@@ -194,21 +214,23 @@
 
       <time title="Created: 2022-02-07 19:19:58" itemprop="dateCreated datePublished" datetime="2022-02-07T19:19:58+08:00">2022-02-07</time>
     </span>
-
-  
-  
-  <span class="post-meta-item">
-    
+    <span class="post-meta-item">
       <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
+        <i class="far fa-calendar-check"></i>
       </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/skitii/2022/02/07/my-first-blog/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2022/02/07/my-first-blog/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2022-02-08 12:40:30" itemprop="dateModified" datetime="2022-02-08T12:40:30+08:00">2022-02-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/skitii/categories/MyTest/" itemprop="url" rel="index"><span itemprop="name">MyTest</span></a>
+        </span>
+    </span>
+
   
 </div>
 
@@ -219,7 +241,15 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          
+          <h1 id="hello-world"><a href="#hello-world" class="headerlink" title="hello world"></a>hello world</h1>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/skitii/2022/02/07/my-first-blog/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -271,21 +301,14 @@
 
       <time title="Created: 2022-02-07 19:18:15" itemprop="dateCreated datePublished" datetime="2022-02-07T19:18:15+08:00">2022-02-07</time>
     </span>
-
-  
-  
-  <span class="post-meta-item">
-    
+    <span class="post-meta-item">
       <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
+        <i class="far fa-calendar-check"></i>
       </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/skitii/2022/02/07/hello-world/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2022/02/07/hello-world/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2022-02-08 12:58:13" itemprop="dateModified" datetime="2022-02-08T12:58:13+08:00">2022-02-08</time>
+    </span>
+
   
 </div>
 
@@ -296,20 +319,15 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
+          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. </p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/skitii/2022/02/07/hello-world/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -351,7 +369,8 @@
 
   
   <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
-<script src="/skitii/js/comments.js"></script><script src="/skitii/js/utils.js"></script><script src="/skitii/js/motion.js"></script><script src="/skitii/js/next-boot.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+<script src="/skitii/js/comments.js"></script><script src="/skitii/js/utils.js"></script><script src="/skitii/js/motion.js"></script><script src="/skitii/js/next-boot.js"></script><script src="/skitii/js/pjax.js"></script>
 
   
 
@@ -364,8 +383,6 @@
 
 
 
-<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"hello","count":true,"i18n":{"disqus":"disqus"}}</script>
-<script src="/skitii/js/third-party/comments/disqus.js"></script>
 
 </body>
 </html>
