@@ -2562,10 +2562,13 @@ hr {
   display: none;
 }
 .posts-expand .post-block:not(:first-child) {
-  margin-top: 120px;
+  margin-top: 30px;
+}
+.posts-expand .post-block {
+  padding-bottom: 2px;
 }
 .posts-expand .post-header {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 .posts-expand .post-tags {
   text-align: left;
@@ -2673,7 +2676,7 @@ hr {
   vertical-align: middle;
 }
 .links-of-author a::before {
-  background: #ffb5f9;
+  background: #bbed70;
   display: inline-block;
   margin-right: 3px;
   transform: translateY(-2px);
