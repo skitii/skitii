@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
@@ -20,22 +20,22 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/purple/pace-theme-flash.css">
   <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"skitii.github.io","root":"/skitii/","images":"/skitii/images","scheme":"Mist","darkmode":false,"version":"8.10.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/skitii/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"skitii.github.io","root":"/skitii/","images":"/skitii/images","scheme":"Mist","darkmode":false,"version":"8.10.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/skitii/js/config.js"></script>
 
-  <meta name="description" content="概述缓存是一件很复杂的事情。我认为比较核心的知识应该是，  缓存一致性保证 缓存数据结构设计和缓存内存管理 缓存中间件的建设（包含通信设计，故障处理，高可用保障等一系列知识）">
+  <meta name="description" content="缓存也是有套路的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="站在使用角度看缓存">
 <meta property="og:url" content="https://skitii.github.io/skitii/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/index.html">
 <meta property="og:site_name" content="Skitii">
-<meta property="og:description" content="概述缓存是一件很复杂的事情。我认为比较核心的知识应该是，  缓存一致性保证 缓存数据结构设计和缓存内存管理 缓存中间件的建设（包含通信设计，故障处理，高可用保障等一系列知识）">
-<meta property="og:locale" content="en_US">
+<meta property="og:description" content="缓存也是有套路的">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.nlark.com/yuque/__puml/7b520a9451b29c16d478db6a7d1a5b7c.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcblxuYXV0b251bWJlclxuXG5wYXJ0aWNpcGFudCBcIldlYlNlcnZlclwiIGFzIFdlYlNlcnZlclxucGFydGljaXBhbnQgXCJDYWNoZVwiIGFzIENhY2hlICNkYXJrY3lhblxucGFydGljaXBhbnQgXCJEQlwiIGFzIERCICNvcmFuZ2Vcbj09IOafpeivoiA9PVxuV2ViU2VydmVyIC0-IENhY2hlOiDmn6Xor6LmlbDmja5cblx0Z3JvdXAg57yT5a2Y5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5Zue57yT5a2Y5pWw5o2uXG5cdGVsc2Ug57yT5a2Y5LiN5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5ZuebnVsbFxuXHRcdFdlYlNlcnZlciAtPiBEQjog5p-l6K-i5pWw5o2uXG5cdFx0REIgLS0-IFdlYlNlcnZlcjog6L-U5Zue5pWw5o2uXG5cdFx0V2ViU2VydmVyIC0-IENhY2hlOiDorr7nva7mlbDmja5cblx0ZW5kXG49PSDmm7TmlrDmlbDmja4gPT1cbldlYlNlcnZlciAtPiBEQjog5pu05paw5pWw5o2uXG5EQiAtLT4gV2ViU2VydmVyOiDov5Tlm57mm7TmlrDnu5PmnpxcbldlYlNlcnZlciAtPiBDYWNoZTog5aSx5pWI57yT5a2YXG5AZW5kdW1sIiwidXJsIjoiaHR0cHM6Ly9jZG4ubmxhcmsuY29tL3l1cXVlL19fcHVtbC83YjUyMGE5NDUxYjI5YzE2ZDQ3OGRiNmE3ZDFhNWI3Yy5zdmciLCJpZCI6ImRHRFVLIiwibWFyZ2luIjp7InRvcCI6dHJ1ZSwiYm90dG9tIjp0cnVlfSwiY2FyZCI6ImRpYWdyYW0ifQ==">
 <meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/21760570/1635123541336-143553c3-54a4-4b06-9fa5-12f5c0d8ed6e.png#clientId=u0e5344b7-79aa-4&from=paste&height=494&id=u840b8fcb&margin=%5Bobject%20Object%5D&name=image.png&originHeight=494&originWidth=399&originalType=binary&ratio=1&size=53418&status=done&style=none&taskId=ud9f2bafd-41ac-42c9-ae68-01468166e6a&width=399">
 <meta property="og:image" content="https://cdn.nlark.com/yuque/__puml/cf1b0a5e748083fd8c369bd0024fba64.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcbnRpdGxlIEZhY2Vib29rIExlYXNl6K6-6K6hXG5hdXRvbnVtYmVyXG5cbnBhcnRpY2lwYW50IFwiV2ViU2VydmVyXCIgYXMgV2ViU2VydmVyXG5wYXJ0aWNpcGFudCBcIkNhY2hlXCIgYXMgQ2FjaGUgI2RhcmtjeWFuXG5wYXJ0aWNpcGFudCBcIkRCXCIgYXMgREIgI29yYW5nZVxuPT0g5p-l6K-iID09XG5XZWJTZXJ2ZXIgLT4gQ2FjaGU6IOafpeivouaVsOaNrlxuXHRncm91cCDnvJPlrZjlkb3kuK1cblx0XHRDYWNoZSAtLT4gV2ViU2VydmVyOiDov5Tlm57nvJPlrZjmlbDmja5cblx0ZWxzZSDnvJPlrZjkuI3lkb3kuK1cblx0XHRncm91cCBjYWNoZeS4reS4jeWtmOWcqGxlYXNlXG5cdFx0XHRDYWNoZSAtLT4gV2ViU2VydmVyOiDov5Tlm55udWxs5oiW6ICF6L-H5pyf5YC877yI5qC55o2u6YWN572u77yJXG5cdFx0XHRXZWJTZXJ2ZXIgLT4gV2ViU2VydmVyOiDnrYnkuIDmrrXml7bpl7Rcblx0XHRcdFdlYlNlcnZlciAtPiBDYWNoZTog5p-l6K-i5pWw5o2uXG5cdFx0XHRDYWNoZSAtLT4gV2ViU2VydmVyOiDov5Tlm57nvJPlrZjmlbDmja5cblx0XHRlbHNlIGNhY2hl5Lit5a2Y5ZyobGVhc2Vcblx0XHRcdENhY2hlIC0tPiBXZWJTZXJ2ZXI6IOi_lOWbnm51bGws5bim5pyJbGVhc2XmoIfor4Zcblx0XHRcdFdlYlNlcnZlciAtPiBEQjog5p-l6K-i5pWw5o2uXG5cdFx0XHREQiAtLT4gV2ViU2VydmVyOiDov5Tlm57mlbDmja5cblx0XHRcdFdlYlNlcnZlciAtPiBDYWNoZTogbGVhc2XmsqHmnInov4fmnJ_vvIzmiY3orr7nva7mlbDmja5cblx0XHRlbmRcblx0ZW5kXG49PSDmm7TmlrDmlbDmja4gPT1cbldlYlNlcnZlciAtPiBEQjog5pu05paw5pWw5o2uXG5EQiAtLT4gV2ViU2VydmVyOiDov5Tlm57mm7TmlrDnu5PmnpxcbldlYlNlcnZlciAtPiBDYWNoZTog5aSx5pWI57yT5a2YXG5DYWNoZSAtPiBDYWNoZSA6IOabtOaWsGxlYXNlXG5AZW5kdW1sIiwidXJsIjoiaHR0cHM6Ly9jZG4ubmxhcmsuY29tL3l1cXVlL19fcHVtbC9jZjFiMGE1ZTc0ODA4M2ZkOGMzNjliZDAwMjRmYmE2NC5zdmciLCJpZCI6Im5CcU9SIiwibWFyZ2luIjp7InRvcCI6dHJ1ZSwiYm90dG9tIjp0cnVlfSwiY2FyZCI6ImRpYWdyYW0ifQ==">
 <meta property="og:image" content="https://cdn.nlark.com/yuque/__puml/8e3c4decea0b2feed13b21312e2b2f28.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcbnRpdGxlIOaVsOaNruW6k-afpeivouWKoOmUgVxuYXV0b251bWJlclxuXG5wYXJ0aWNpcGFudCBcIldlYlNlcnZlclwiIGFzIFdlYlNlcnZlclxucGFydGljaXBhbnQgXCJDYWNoZVwiIGFzIENhY2hlICNkYXJrY3lhblxucGFydGljaXBhbnQgXCJEQlwiIGFzIERCICNvcmFuZ2Vcbj09IOafpeivoiA9PVxuV2ViU2VydmVyIC0-IENhY2hlOiDmn6Xor6LmlbDmja5cblx0Z3JvdXAg57yT5a2Y5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5Zue57yT5a2Y5pWw5o2uXG5cdGVsc2Ug57yT5a2Y5LiN5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5ZuebnVsbFxuXHRcdFdlYlNlcnZlciAtPiBXZWJTZXJ2ZXIgOiDojrflj5bliIbluIPlvI_plIFcblx0XHRncm91cCDojrflj5bmiJDlip9cblx0XHRcdFdlYlNlcnZlciAtPiBDYWNoZSA6IOiuvue9rmxlYXNlX2tleToxXG5cdFx0XHRXZWJTZXJ2ZXIgLT4gREI6IOafpeivouaVsOaNrlxuXHRcdFx0REIgLS0-IFdlYlNlcnZlcjog6L-U5Zue5pWw5o2uXG5cdFx0XHRncm91cCBsZWFzZV9rZXnlrZjlnKhcblx0XHRcdFx0V2ViU2VydmVyIC0-IENhY2hlOiDorr7nva7mlbDmja5cblx0XHRcdGVuZFxuXHRcdFx0V2ViU2VydmVyIC0-IFdlYlNlcnZlciA6IOmHiuaUvuWIhuW4g-W8j-mUgVxuXHRcdGVsc2Ug6I635Y-W5aSx6LSlXG5cdFx0XHRXZWJTZXJ2ZXIgLT4gV2ViU2VydmVyIDog562J5b6F5LiA5bCP5q615pe26Ze0XG5cdFx0XHRXZWJTZXJ2ZXIgLT4gQ2FjaGU6IOafpeivoue8k-WtmOaVsOaNrlxuXHRcdFx0bm90ZSByaWdodFxuXHRcdFx05Li65LuA5LmI6KaB562J5LiA5q615pe26Ze05YaN5Y675p-l6K-i57yT5a2Y77yM6ICM5LiN5piv562J6ZSB5ZGi77yfXG5cdFx0XHTmiYDmnInnmoTlubblj5Hpg73lnKjnrYnplIHvvIzpnIDopoHkuIDkuKrkuKrmiafooYzjgIJcblx0XHRcdGVuZCBub3RlXG5cdFx0XHRDYWNoZSAtLT4gV2ViU2VydmVyOiDov5Tlm57nvJPlrZjmlbDmja5cblx0ZW5kXG49PSDmm7TmlrDmlbDmja4gPT1cbldlYlNlcnZlciAtPiBEQjog5pu05paw5pWw5o2uXG5EQiAtLT4gV2ViU2VydmVyOiDov5Tlm57mm7TmlrDnu5PmnpxcbldlYlNlcnZlciAtPiBDYWNoZTog5aSx5pWI57yT5a2YXG5XZWJTZXJ2ZXIgLT4gQ2FjaGU6IOWIoOmZpGxlYXNlX2tleVxuQGVuZHVtbCIsInVybCI6Imh0dHBzOi8vY2RuLm5sYXJrLmNvbS95dXF1ZS9fX3B1bWwvOGUzYzRkZWNlYTBiMmZlZWQxM2IyMTMxMmUyYjJmMjguc3ZnIiwiaWQiOiJmYm1WdyIsIm1hcmdpbiI6eyJ0b3AiOnRydWUsImJvdHRvbSI6dHJ1ZX0sImNhcmQiOiJkaWFncmFtIn0=">
 <meta property="og:image" content="https://cdn.nlark.com/yuque/__puml/a0ed468999d29a3a2f0c91e2e9f3e647.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcbnNraW5wYXJhbSBQYXJ0aWNpcGFudFBhZGRpbmcgMjBcbmF1dG9udW1iZXJcblxucGFydGljaXBhbnQgXCJXZWJTZXJ2ZXJcIiBhcyBXZWJTZXJ2ZXJcbmJveCBjYWNoZSBzZXZpY2VcbnBhcnRpY2lwYW50IFwiQ2FjaGVcIiBhcyBDYWNoZSAjZGFya2N5YW5cbnBhcnRpY2lwYW50IFwiREJcIiBhcyBEQiAjb3JhbmdlXG5lbmQgYm94XG49PSDmn6Xor6IgPT1cbldlYlNlcnZlciAtPiBDYWNoZTog5p-l6K-i5pWw5o2uXG5cdGdyb3VwIOe8k-WtmOS4jeWRveS4rVxuXHRcdENhY2hlIC0-IERCOiDmn6Xor6LmlbDmja5cblx0XHREQiAtLT4gQ2FjaGU6IOi_lOWbnuaVsOaNrlxuXHRcdENhY2hlIC0-IENhY2hlOiDorr7nva7mlbDmja5cblx0ZW5kXG5DYWNoZSAtLT4gV2ViU2VydmVyOiDov5Tlm57nvJPlrZjmlbDmja5cbj09IOabtOaWsO-8iOW8guatpe-8iSA9PVxuV2ViU2VydmVyIC0-IENhY2hlOiDmm7TmlrDmlbDmja5cbkNhY2hlIC0-IENhY2hlOiDmm7TmlrDnvJPlrZhcbkNhY2hlIC0tPiBXZWJTZXJ2ZXI6IOi_lOWbnuabtOaWsOe7k-aenFxuZ3JvdXAg5byC5q2l5pu05pawZGJcblx0Q2FjaGUgLT4gREI6IOabtOaWsOaVsOaNrlxuXHREQiAtLT4gQ2FjaGU6IOi_lOWbnuabtOaWsOe7k-aenFxuZW5kXG5AZW5kdW1sIiwidXJsIjoiaHR0cHM6Ly9jZG4ubmxhcmsuY29tL3l1cXVlL19fcHVtbC9hMGVkNDY4OTk5ZDI5YTNhMmYwYzkxZTJlOWYzZTY0Ny5zdmciLCJpZCI6IkNrQ05LIiwibWFyZ2luIjp7InRvcCI6dHJ1ZSwiYm90dG9tIjp0cnVlfSwiY2FyZCI6ImRpYWdyYW0ifQ==">
 <meta property="article:published_time" content="2022-02-09T11:27:10.000Z">
-<meta property="article:modified_time" content="2022-02-09T11:49:07.781Z">
+<meta property="article:modified_time" content="2022-02-10T05:15:47.204Z">
 <meta property="article:author" content="Skitii">
 <meta property="article:tag" content="Cache">
 <meta name="twitter:card" content="summary">
@@ -46,7 +46,7 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://skitii.github.io/skitii/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/","path":"2022/02/09/站在使用角度看缓存/","title":"站在使用角度看缓存"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://skitii.github.io/skitii/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/","path":"2022/02/09/站在使用角度看缓存/","title":"站在使用角度看缓存"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>站在使用角度看缓存 | Skitii</title>
@@ -72,7 +72,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    <div class="toggle" aria-label="切换导航栏" role="button">
         <span class="toggle-line"></span>
         <span class="toggle-line"></span>
         <span class="toggle-line"></span>
@@ -98,11 +98,11 @@
 
 <nav class="site-nav">
   <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/skitii/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
-        <li class="menu-item menu-item-about"><a href="/skitii/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
-        <li class="menu-item menu-item-tags"><a href="/skitii/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
-        <li class="menu-item menu-item-categories"><a href="/skitii/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
-        <li class="menu-item menu-item-archives"><a href="/skitii/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-home"><a href="/skitii/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/skitii/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/skitii/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/skitii/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/skitii/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
   </ul>
 </nav>
 
@@ -123,10 +123,10 @@
     <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
-          Table of Contents
+          文章目录
         </li>
         <li class="sidebar-nav-overview">
-          Overview
+          站点概览
         </li>
       </ul>
 	
@@ -149,18 +149,18 @@
       <div class="site-state-item site-state-posts">
         <a href="/skitii/archives/">
           <span class="site-state-item-count">2</span>
-          <span class="site-state-item-name">posts</span>
+          <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/skitii/categories/">
         <span class="site-state-item-count">2</span>
-        <span class="site-state-item-name">categories</span></a>
+        <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/skitii/tags/">
         <span class="site-state-item-count">2</span>
-        <span class="site-state-item-name">tags</span></a>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
@@ -187,7 +187,7 @@
     </header>
 
     
-  <div class="back-to-top" role="button" aria-label="Back to top">
+  <div class="back-to-top" role="button" aria-label="返回顶部">
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
@@ -209,7 +209,7 @@
   
   
 
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://skitii.github.io/skitii/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -232,28 +232,49 @@
       <span class="post-meta-item-icon">
         <i class="far fa-calendar"></i>
       </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
+      <span class="post-meta-item-text">发表于</span>
 
-      <time title="Created: 2022-02-09 19:27:10 / Modified: 19:49:07" itemprop="dateCreated datePublished" datetime="2022-02-09T19:27:10+08:00">2022-02-09</time>
+      <time title="创建时间：2022-02-09 19:27:10" itemprop="dateCreated datePublished" datetime="2022-02-09T19:27:10+08:00">2022-02-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-02-10 13:15:47" itemprop="dateModified" datetime="2022-02-10T13:15:47+08:00">2022-02-10</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
-      <span class="post-meta-item-text">In</span>
+      <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
           <a href="/skitii/categories/Cache/" itemprop="url" rel="index"><span itemprop="name">Cache</span></a>
         </span>
     </span>
 
   
-    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
       <span class="post-meta-item-icon">
         <i class="far fa-eye"></i>
       </span>
-      <span class="post-meta-item-text">Views: </span>
+      <span class="post-meta-item-text">阅读次数：</span>
       <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -265,16 +286,16 @@
     
     <div class="post-body" itemprop="articleBody">
         <meta name="referrer" content="no-referrer" />
+缓存也是有套路的
+<span id="more"></span>
 
 <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>缓存是一件很复杂的事情。我认为比较核心的知识应该是，</p>
 <ol>
 <li>缓存一致性保证</li>
 <li>缓存数据结构设计和缓存内存管理</li>
-<li>缓存中间件的建设（包含通信设计，故障处理，高可用保障等一系列知识）</li>
+<li>缓存中间件的建设（包含通信设计，故障处理，高可用保障等一系列知识）<br>本文主要从使用的角度去剖析缓存中的一些核心的内容。<br>在使用上，我把缓存比较核心的东西总结为，</li>
 </ol>
-<span id="more"></span>
-
-<p>本文主要从使用的角度去剖析缓存中的一些核心的内容。<br>在使用上，我把缓存比较核心的东西总结为，<br><strong>一个业务难题</strong>，缓存使用场景<br><strong>一个核心问题</strong>，并发和异常的情况下，如何尽可能的保证数据的一致性。<br><strong>两个核心操作</strong>，查询，更新；</p>
+<p><strong>一个业务难题</strong>，缓存使用场景<br><strong>一个核心问题</strong>，并发和异常的情况下，如何尽可能的保证数据的一致性。<br><strong>两个核心操作</strong>，查询，更新；</p>
 <h1 id="业务难题"><a href="#业务难题" class="headerlink" title="业务难题"></a>业务难题</h1><p>之前我们聊过一轮缓存相关的内容，我们之前一直纠结于要不要使用缓存，以及什么情况下该使用缓存。<br>这个业务难题，你很难去笼统的说，什么情况下该用缓存，什么情况下不该用缓存？<br>我觉得我们只能根据缓存带来的优点和可能出现的问题然后在结合我们的业务场景去考虑，我们究竟要不要使用缓存。</p>
 <h4 id="缓存优缺点"><a href="#缓存优缺点" class="headerlink" title="缓存优缺点"></a>缓存优缺点</h4><p>优点：</p>
 <ol>
@@ -381,12 +402,26 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Skitii</span>
 </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">4k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4 分钟</span>
+  </span>
+</div>
 <div class="busuanzi-count">
     <span class="post-meta-item" id="busuanzi_container_site_uv">
       <span class="post-meta-item-icon">
         <i class="fa fa-user"></i>
       </span>
-      <span class="site-uv" title="Total Visitors">
+      <span class="site-uv" title="总访客量">
         <span id="busuanzi_value_site_uv"></span>
       </span>
     </span>
@@ -394,18 +429,14 @@
       <span class="post-meta-item-icon">
         <i class="fa fa-eye"></i>
       </span>
-      <span class="site-pv" title="Total Views">
+      <span class="site-pv" title="总访问量">
         <span id="busuanzi_value_site_pv"></span>
       </span>
     </span>
 </div>
-  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
-<div class="theme-info">
-  <div class="powered-by"></div>
-  <span class="post-count">Total words in site : 3k</span>
-</div>
     </div>
   </footer>
 
