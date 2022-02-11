@@ -20,12 +20,12 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/purple/pace-theme-flash.css">
   <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"skitii.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.10.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"skitii.vercel.app","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.10.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
 
   <meta name="description" content="缓存也是有套路的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="站在使用角度看缓存">
-<meta property="og:url" content="https://skitii.github.io/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/index.html">
+<meta property="og:url" content="https://skitii.vercel.app/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/index.html">
 <meta property="og:site_name" content="Skitii">
 <meta property="og:description" content="缓存也是有套路的">
 <meta property="og:locale" content="zh_CN">
@@ -42,11 +42,11 @@
 <meta name="twitter:image" content="https://cdn.nlark.com/yuque/__puml/7b520a9451b29c16d478db6a7d1a5b7c.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcblxuYXV0b251bWJlclxuXG5wYXJ0aWNpcGFudCBcIldlYlNlcnZlclwiIGFzIFdlYlNlcnZlclxucGFydGljaXBhbnQgXCJDYWNoZVwiIGFzIENhY2hlICNkYXJrY3lhblxucGFydGljaXBhbnQgXCJEQlwiIGFzIERCICNvcmFuZ2Vcbj09IOafpeivoiA9PVxuV2ViU2VydmVyIC0-IENhY2hlOiDmn6Xor6LmlbDmja5cblx0Z3JvdXAg57yT5a2Y5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5Zue57yT5a2Y5pWw5o2uXG5cdGVsc2Ug57yT5a2Y5LiN5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5ZuebnVsbFxuXHRcdFdlYlNlcnZlciAtPiBEQjog5p-l6K-i5pWw5o2uXG5cdFx0REIgLS0-IFdlYlNlcnZlcjog6L-U5Zue5pWw5o2uXG5cdFx0V2ViU2VydmVyIC0-IENhY2hlOiDorr7nva7mlbDmja5cblx0ZW5kXG49PSDmm7TmlrDmlbDmja4gPT1cbldlYlNlcnZlciAtPiBEQjog5pu05paw5pWw5o2uXG5EQiAtLT4gV2ViU2VydmVyOiDov5Tlm57mm7TmlrDnu5PmnpxcbldlYlNlcnZlciAtPiBDYWNoZTog5aSx5pWI57yT5a2YXG5AZW5kdW1sIiwidXJsIjoiaHR0cHM6Ly9jZG4ubmxhcmsuY29tL3l1cXVlL19fcHVtbC83YjUyMGE5NDUxYjI5YzE2ZDQ3OGRiNmE3ZDFhNWI3Yy5zdmciLCJpZCI6ImRHRFVLIiwibWFyZ2luIjp7InRvcCI6dHJ1ZSwiYm90dG9tIjp0cnVlfSwiY2FyZCI6ImRpYWdyYW0ifQ==">
 
 
-<link rel="canonical" href="https://skitii.github.io/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/">
+<link rel="canonical" href="https://skitii.vercel.app/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://skitii.github.io/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/","path":"2022/02/09/站在使用角度看缓存/","title":"站在使用角度看缓存"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://skitii.vercel.app/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/","path":"2022/02/09/站在使用角度看缓存/","title":"站在使用角度看缓存"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>站在使用角度看缓存 | Skitii</title>
@@ -210,7 +210,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://skitii.github.io/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/">
+    <link itemprop="mainEntityOfPage" href="https://skitii.vercel.app/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpeg">

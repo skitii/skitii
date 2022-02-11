@@ -20,12 +20,12 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/purple/pace-theme-flash.css">
   <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"skitii.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.10.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"skitii.vercel.app","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.10.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
 
   <meta name="description" content="Redis的设计中，有一个被大家熟知的概念，就是在6.0之前，Redis是单线程模型，6.0之后才引入的多线程。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis网络事件模型">
-<meta property="og:url" content="https://skitii.github.io/2022/02/08/Redis%E7%BD%91%E7%BB%9C%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:url" content="https://skitii.vercel.app/2022/02/08/Redis%E7%BD%91%E7%BB%9C%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B/index.html">
 <meta property="og:site_name" content="Skitii">
 <meta property="og:description" content="Redis的设计中，有一个被大家熟知的概念，就是在6.0之前，Redis是单线程模型，6.0之后才引入的多线程。">
 <meta property="og:locale" content="zh_CN">
@@ -41,11 +41,11 @@
 <meta name="twitter:image" content="https://cdn.nlark.com/yuque/__puml/8edd221a204eefb854da24682a8dd270.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcblxuc3RhcnRcblxuOuWQr-WKqOacjeWKoeWZqOWRveS7pDtcbjror7vlj5bmnI3liqHlmajphY3nva47XG465Yid5aeL5YyW5pyN5Yqh5ZmoO1xuOuS7juejgeebmOivu-WPluaVsOaNrjtcbjrlkK_liqjkuovku7blvqrnjq87XG46YmVmb3Jlc2xlZXDlm57osIPvvIjmnIDkuLvopoHnmoTlt6XkvZzlsLHmmK_lsIblvoXlhpnlm57nmoTmlbDmja7lhpnlm57nu5nlrqLmiLfnq6_vvIzlpoLmnpzlhpnkuI3lrozlsLHms6jlhozlhpnlhaXlm57osIPlh73mlbDvvIk7XG466K6h566X5LiL5qyh5pe26Ze05LqL5Lu255qE5pe26Ze0O1xuOuiOt-WPluWGheaguOivu-WGmeS6i-S7tu-8jOWwhuebuOWFs-ivu-WGmeS6i-S7tuaUvuWFpeWIsOWkhOeQhuWIl-ihqOS4rTtcbmlmICjmnInkuovku7blj5HnlJ8pIHRoZW4oeWVzKVxuXHQ65aSE55CG5paH5Lu25LqL5Lu25YiG5Y-RO1xuXHRzcGxpdFxuXHRcdDrlpITnkIbov57mjqXlupTnrZQ7XG5cdHNwbGl0IGFnYWluIFxuXHRcdDrlpITnkIbor7fmsYLlpITnkIbkuovku7Y7XG5cdHNwbGl0IGFnYWluIFxuXHRcdDrlpITnkIblhpnlm57kuovku7Y7XG5cdGVuZCBzcGxpdFxuZWxzZSAobm8pXG5cdDrlpITnkIbml7bpl7Tkuovku7Y7XG5lbmRpZlxuc3RvcFxuXG5AZW5kdW1sIiwidXJsIjoiaHR0cHM6Ly9jZG4ubmxhcmsuY29tL3l1cXVlL19fcHVtbC84ZWRkMjIxYTIwNGVlZmI4NTRkYTI0NjgyYThkZDI3MC5zdmciLCJpZCI6Inh2MUNyIiwibWFyZ2luIjp7InRvcCI6dHJ1ZSwiYm90dG9tIjp0cnVlfSwiY2FyZCI6ImRpYWdyYW0ifQ==">
 
 
-<link rel="canonical" href="https://skitii.github.io/2022/02/08/Redis%E7%BD%91%E7%BB%9C%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B/">
+<link rel="canonical" href="https://skitii.vercel.app/2022/02/08/Redis%E7%BD%91%E7%BB%9C%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://skitii.github.io/2022/02/08/Redis%E7%BD%91%E7%BB%9C%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B/","path":"2022/02/08/Redis网络事件模型/","title":"Redis网络事件模型"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://skitii.vercel.app/2022/02/08/Redis%E7%BD%91%E7%BB%9C%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B/","path":"2022/02/08/Redis网络事件模型/","title":"Redis网络事件模型"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>Redis网络事件模型 | Skitii</title>
@@ -209,7 +209,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://skitii.github.io/2022/02/08/Redis%E7%BD%91%E7%BB%9C%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B/">
+    <link itemprop="mainEntityOfPage" href="https://skitii.vercel.app/2022/02/08/Redis%E7%BD%91%E7%BB%9C%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpeg">
