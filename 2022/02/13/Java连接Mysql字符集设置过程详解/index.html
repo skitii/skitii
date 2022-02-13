@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+
+<meta name="baidu-site-verification" content="code-AhZIkdDG9J" />
+<meta name="google-site-verification" content="PeC9Clz1swOOWEProA3d9p39srZKONgJreLma19x0Cc" />
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/purple/pace-theme-flash.css">
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"skitii.vercel.app","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.10.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+  <meta name="description" content="utf8mb4设置无效引发的java-mysql字符集设置探索">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java连接Mysql字符集设置过程详解">
+<meta property="og:url" content="https://skitii.vercel.app/2022/02/13/Java%E8%BF%9E%E6%8E%A5Mysql%E5%AD%97%E7%AC%A6%E9%9B%86%E8%AE%BE%E7%BD%AE%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="Skitii">
+<meta property="og:description" content="utf8mb4设置无效引发的java-mysql字符集设置探索">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927264-76c34c17-ff19-4edd-82de-eb0f162cf63f.png#crop=0&crop=0&crop=1&crop=1&id=z9IGe&originHeight=1006&originWidth=2854&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927397-767941f4-11c8-4469-8d5c-7c7d7db46adc.png#crop=0&crop=0&crop=1&crop=1&id=UnY3o&originHeight=1040&originWidth=2828&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927551-0686ab45-a97c-4d00-9fe1-bccbf4180a18.png#crop=0&crop=0&crop=1&crop=1&id=piDWS&originHeight=300&originWidth=256&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927642-05a3a361-fb53-4040-8570-47c6799eed80.png#crop=0&crop=0&crop=1&crop=1&id=W4n9Q&originHeight=289&originWidth=612&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927731-6d915569-5094-48e9-8a40-edec9ed8a0c8.png#crop=0&crop=0&crop=1&crop=1&id=YhfqT&originHeight=342&originWidth=785&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927814-ee993b88-9c5c-48b1-a7f1-f36bcda25a7a.png#crop=0&crop=0&crop=1&crop=1&id=gvkMG&originHeight=95&originWidth=1032&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927903-d5afe078-85e1-4d8d-b105-74d2f9ff9fd1.png#crop=0&crop=0&crop=1&crop=1&id=nqtTU&originHeight=151&originWidth=1013&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927993-3f142a55-bb36-44b0-877d-43aa18d4ea1d.png#crop=0&crop=0&crop=1&crop=1&id=Vkn95&originHeight=387&originWidth=1267&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=">
+<meta property="article:published_time" content="2022-02-13T03:08:37.000Z">
+<meta property="article:modified_time" content="2022-02-13T03:12:53.449Z">
+<meta property="article:author" content="Skitii">
+<meta property="article:tag" content="Mysql">
+<meta property="article:tag" content="utf8mb4">
+<meta property="article:tag" content="java-mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927264-76c34c17-ff19-4edd-82de-eb0f162cf63f.png#crop=0&crop=0&crop=1&crop=1&id=z9IGe&originHeight=1006&originWidth=2854&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=">
+
+
+<link rel="canonical" href="https://skitii.vercel.app/2022/02/13/Java%E8%BF%9E%E6%8E%A5Mysql%E5%AD%97%E7%AC%A6%E9%9B%86%E8%AE%BE%E7%BD%AE%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://skitii.vercel.app/2022/02/13/Java%E8%BF%9E%E6%8E%A5Mysql%E5%AD%97%E7%AC%A6%E9%9B%86%E8%AE%BE%E7%BD%AE%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/","path":"2022/02/13/Java连接Mysql字符集设置过程详解/","title":"Java连接Mysql字符集设置过程详解"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Java连接Mysql字符集设置过程详解 | Skitii</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+
+  <!--pjax：防止跳转页面音乐暂停-->
+  <script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Skitii</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+	
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%B0%E8%B1%A1"><span class="nav-number">1.</span> <span class="nav-text">现象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E7%A7%8D%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%EF%BC%8C"><span class="nav-number">2.</span> <span class="nav-text">三种解决方案，</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java-mysql-connector%E5%92%8Cmysql%E5%BB%BA%E7%AB%8B%E8%BF%9E%E6%8E%A5%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">java-mysql-connector和mysql建立连接的过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql%E6%8F%A1%E6%89%8B%E5%8D%8F%E8%AE%AE%E5%8C%85"><span class="nav-number">4.</span> <span class="nav-text">Mysql握手协议包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java-mysql-connector%E8%AE%BE%E7%BD%AE%E5%AD%97%E7%AC%A6%E9%9B%86%E8%BF%87%E7%A8%8B"><span class="nav-number">5.</span> <span class="nav-text">java-mysql-connector设置字符集过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E6%9D%A1SQL%E4%BB%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">6.</span> <span class="nav-text">一条SQL从客户端到服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%BA%E5%B8%A6%E5%8F%88%E4%BA%86%E8%A7%A3%E4%B8%80%E4%BA%9BMysql%E7%9A%84%E5%AD%97%E7%AC%A6%E9%9B%86%E7%9B%B8%E5%85%B3%E5%86%85%E5%AE%B9"><span class="nav-number">7.</span> <span class="nav-text">顺带又了解一些Mysql的字符集相关内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java-mysql-connector%E6%BA%90%E7%A0%81%EF%BC%88%E7%AE%80%E5%8D%95%E8%AE%B0%E5%BD%95%E4%B8%80%E4%B8%8B%EF%BC%8C%E6%96%B9%E4%BE%BF%E4%BB%A5%E5%90%8E%E5%9B%9E%E9%A1%BE%EF%BC%89"><span class="nav-number">8.</span> <span class="nav-text">java-mysql-connector源码（简单记录一下，方便以后回顾）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E6%80%BB%E7%BB%93%E4%B8%80%E4%B8%8B"><span class="nav-number">9.</span> <span class="nav-text">简单总结一下</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Skitii"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Skitii</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="sidebar-button site-overview-item animated">
+    <button><i class="fa fa-comment"></i>
+      Contact
+    </button>
+  </div>
+
+
+
+        </div>
+      </div>
+
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=300 height=450 src="//music.163.com/outchain/player?type=0&id=7179117219&auto=1&height=430"></iframe>
+
+    </div>
+  
+  </aside>
+  
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://skitii.vercel.app/2022/02/13/Java%E8%BF%9E%E6%8E%A5Mysql%E5%AD%97%E7%AC%A6%E9%9B%86%E8%AE%BE%E7%BD%AE%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Skitii">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Skitii">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java连接Mysql字符集设置过程详解
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2022-02-13 11:08:37 / 修改时间：11:12:53" itemprop="dateCreated datePublished" datetime="2022-02-13T11:08:37+08:00">2022-02-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+            <div class="post-description">utf8mb4设置无效引发的java-mysql字符集设置探索</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <meta name="referrer" content="no-referrer" />
+<span id="more"></span>
+
+<h3 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h3><p>生产数据库设置了数据库的字符集为utf8mb4。数据库层面可以正常插入表情。但是在java程序中设置表情却不生效。<br>测试数据库也设置了数据库的字符集为utf8mb4。数据库层面可以正常插入表情。但是在java程序中也可以正常插入表情。<br>？？？<br>测试环境数据库重启过。生产没有&#x3D;&#x3D;。<br>怎么解决呢？</p>
+<ul>
+<li>重启生产库是不是可以解决问题呢？</li>
+<li>不重启数据库能不能解决呢？<h3 id="三种解决方案，"><a href="#三种解决方案，" class="headerlink" title="三种解决方案，"></a>三种解决方案，</h3></li>
+</ul>
+<ol>
+<li>重启数据库（character-set-server 这个配置只在数据库启动时生效）</li>
+<li>修改连接配置，指定连接的字符集 （数据库连接后面加上  com.mysql.jdbc.faultInjection.serverCharsetIndex&#x3D;45）</li>
+<li>升级 mysql连接驱动到5.1.47之后的版本（因为这个版本之后设置encoding&#x3D;utf8会自动映射成utf8mb4）</li>
+</ol>
+<p>上个链接吧，完美解决。<br><a target="_blank" rel="noopener" href="https://blog.arstercz.com/mysql-connector-java-%E6%8F%92%E5%85%A5-utf8mb4-%E5%AD%97%E7%AC%A6%E5%A4%B1%E8%B4%A5%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E5%88%86%E6%9E%90/">https://blog.arstercz.com/mysql-connector-java-%E6%8F%92%E5%85%A5-utf8mb4-%E5%AD%97%E7%AC%A6%E5%A4%B1%E8%B4%A5%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E5%88%86%E6%9E%90/</a><br>作者的思路很清晰。</p>
+<p>对于修改配置这一点，<br>第一次，招哥和聪妈进行尝试，失败了。<br>第二次，我尝试修改配置文件，成功了。<br>哈哈哈，蛋疼的是，他们的配置文件写错了。</p>
+<p>但是有点奇怪的是，<br>我在本地连接数据库测试的时候，默认设置的字符集就是utf8mb4。<br>但是在预发抓连接mysql的包是，发现设置的字符集却是utf8。<br>上图！<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927264-76c34c17-ff19-4edd-82de-eb0f162cf63f.png#crop=0&crop=0&crop=1&crop=1&id=z9IGe&originHeight=1006&originWidth=2854&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title="><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927397-767941f4-11c8-4469-8d5c-7c7d7db46adc.png#crop=0&crop=0&crop=1&crop=1&id=UnY3o&originHeight=1040&originWidth=2828&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title="><br>但是代码一样的呀！没有理由会有不同啊。<br>于是开始了下面的探索，嘿嘿嘿。</p>
+<h3 id="java-mysql-connector和mysql建立连接的过程"><a href="#java-mysql-connector和mysql建立连接的过程" class="headerlink" title="java-mysql-connector和mysql建立连接的过程"></a>java-mysql-connector和mysql建立连接的过程</h3><table>
+<thead>
+<tr>
+<th>@startuml Java程序 -&gt; mysql服务器: TCP层握手 mysql服务器 -&gt; Java程序: TCP确认ACK mysql服务器 -&gt; Java程序: MYSQL问候客户端 Java程序 -&gt; mysql服务器: 带用户名密码登录指定数据库 mysql服务器 -&gt; Java程序: 返回MYSQL握手包 Java程序 -&gt; mysql服务器: 带连接器版本获取服务器的一些信息（auto_increment,timezone,charset） mysql服务器 -&gt; Java程序: 返回相关信息 Java程序 -&gt; mysql服务器: 设置连接的字符集之类的信息 @enduml</th>
+</tr>
+</thead>
+</table>
+<p><strong>配上抓的数据包</strong></p>
+<table>
+<thead>
+<tr>
+<th>开发</th>
+<th>预发</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://kb.cvte.com/download/attachments/241241843/dev.pcap?version=1&modificationDate=1624613134000&api=v2">dev.pcap</a></td>
+<td><a target="_blank" rel="noopener" href="https://kb.cvte.com/download/attachments/241241843/pre.pcap?version=1&modificationDate=1624613134000&api=v2">pre.pcap</a></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://kb.cvte.com/download/attachments/241241843/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83.txt?version=1&modificationDate=1624671239000&api=v2">开发环境.txt</a></td>
+<td><a target="_blank" rel="noopener" href="https://kb.cvte.com/download/attachments/241241843/%E9%A2%84%E5%8F%91.txt?version=2&modificationDate=1624671269000&api=v2">预发.txt</a></td>
+</tr>
+</tbody></table>
+<h3 id="Mysql握手协议包"><a href="#Mysql握手协议包" class="headerlink" title="Mysql握手协议包"></a><strong>Mysql握手协议包</strong></h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927551-0686ab45-a97c-4d00-9fe1-bccbf4180a18.png#crop=0&crop=0&crop=1&crop=1&id=piDWS&originHeight=300&originWidth=256&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title="></p>
+<h3 id="java-mysql-connector设置字符集过程"><a href="#java-mysql-connector设置字符集过程" class="headerlink" title="java-mysql-connector设置字符集过程"></a>java-mysql-connector设置字符集过程</h3><table>
+<thead>
+<tr>
+<th>@startuml :开启网络连接; :登录Mysql服务器; :获取Mysql服务器返回握手包; :解析Mysql服务器字符集; if (配置中设置设置了字符集?) then (yes)   :字符集（serverCharsetIndex） &#x3D; 配置中获取字符集设置; else (no)   :字符集（serverCharsetIndex） &#x3D; 服务器字符集; endif :设置客户端连接的字符集(通过网络发送给mysql服务器); @enduml</th>
+</tr>
+</thead>
+</table>
+<h3 id="一条SQL从客户端到服务器"><a href="#一条SQL从客户端到服务器" class="headerlink" title="一条SQL从客户端到服务器"></a>一条SQL从客户端到服务器</h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927642-05a3a361-fb53-4040-8570-47c6799eed80.png#crop=0&crop=0&crop=1&crop=1&id=W4n9Q&originHeight=289&originWidth=612&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title="><br>详情建议阅读《高性能Mysql》第7.9章。</p>
+<h3 id="顺带又了解一些Mysql的字符集相关内容"><a href="#顺带又了解一些Mysql的字符集相关内容" class="headerlink" title="顺带又了解一些Mysql的字符集相关内容"></a>顺带又了解一些Mysql的字符集相关内容</h3><p>1.字符集参数含义<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927731-6d915569-5094-48e9-8a40-edec9ed8a0c8.png#crop=0&crop=0&crop=1&crop=1&id=YhfqT&originHeight=342&originWidth=785&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title="><br>2.mysql字符集相关sql</p>
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SET NAMES utf8mb4</td>
+<td>设置本次连接的字符集为utf8mb4</td>
+</tr>
+<tr>
+<td><strong>SELECT</strong> * <strong>FROM</strong> information_schema.COLLATIONS ;</td>
+<td>查看mysql排序规则</td>
+</tr>
+<tr>
+<td><strong>show</strong> variables <strong>like</strong> ‘%character%’;</td>
+<td>查看数据库字符集</td>
+</tr>
+<tr>
+<td><strong>show</strong> variables <strong>like</strong> ‘collation%’;</td>
+<td>查看数据库排序规则</td>
+</tr>
+<tr>
+<td>alter database 库名 default character set utf8mb4;</td>
+<td>修改数据库字符集(character_set_database)</td>
+</tr>
+<tr>
+<td>set character_set_server&#x3D;utf8;</td>
+<td>设置服务器编码(character_set_server)</td>
+</tr>
+</tbody></table>
+<h3 id="java-mysql-connector源码（简单记录一下，方便以后回顾）"><a href="#java-mysql-connector源码（简单记录一下，方便以后回顾）" class="headerlink" title="java-mysql-connector源码（简单记录一下，方便以后回顾）"></a>java-mysql-connector源码（简单记录一下，方便以后回顾）</h3><p>主要是从类  <strong>ConnectionImpl</strong> 里面的 方法  <strong>configureClientCharacterSet</strong> 入手去追溯一下过程。<br>简单贴几个过程吧<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927814-ee993b88-9c5c-48b1-a7f1-f36bcda25a7a.png#crop=0&crop=0&crop=1&crop=1&id=gvkMG&originHeight=95&originWidth=1032&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title="><br>初始设置字符集，<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927903-d5afe078-85e1-4d8d-b105-74d2f9ff9fd1.png#crop=0&crop=0&crop=1&crop=1&id=nqtTU&originHeight=151&originWidth=1013&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title="><br>处理utf8和utf8mb4,<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644639927993-3f142a55-bb36-44b0-877d-43aa18d4ea1d.png#crop=0&crop=0&crop=1&crop=1&id=Vkn95&originHeight=387&originWidth=1267&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title="></p>
+<h3 id="简单总结一下"><a href="#简单总结一下" class="headerlink" title="简单总结一下"></a>简单总结一下</h3><p>mysql连接过程【看上图】<br>mysql设置字符集过程【看上图】<br>mysql字符集应该注意的问题</p>
+<ol>
+<li>配置生效问题【有些配置可能要重启mysql服务器才能生效】</li>
+<li>配置设置问题【java启动参数，环境变量，配置文件】</li>
+</ol>
+<p>排查思路</p>
+<ol>
+<li>对比现象【代码相同，开发和预发建立连接时，设置的字符集不同】</li>
+<li>猜想问题【服务器返回结果不同，导致设置的字符集不同】</li>
+<li>分析过程，验证猜想【从抓包分析，设置字符集前，先获取了一波服务器配置，对比分析配置。发现差不多，没什么不同】</li>
+<li>根据现象，分析过程【既然是字符集设置不同，就看它字符集设置的过程。最终发现问题】</li>
+<li>发现问题，寻找解决方案【修改字符集配置】</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+              <a href="/tags/utf8mb4/" rel="tag"># utf8mb4</a>
+              <a href="/tags/java-mysql/" rel="tag"># java-mysql</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/02/12/Mysql%E6%85%A2%E6%9F%A5%E8%AF%A2%E5%88%86%E6%9E%90/" rel="prev" title="Mysql慢查询分析">
+                  <i class="fa fa-chevron-left"></i> Mysql慢查询分析
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Skitii</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">18k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">16 分钟</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+<span id="sitetime"></span>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+		Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+		year - 作为date对象的年份，为4位年份值
+		month - 0-11之间的整数，做为date对象的月份
+		day - 1-31之间的整数，做为date对象的天数
+		hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+		minutes - 0-59之间的整数，做为date对象的分钟数
+		seconds - 0-59之间的整数，做为date对象的秒数
+		microseconds - 0-999之间的整数，做为date对象的毫秒数
+        */
+		var t1 = Date.UTC(2022,02,07,15,00,00); //北京时间2018-2-13 00:00:00
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" @Skitii 已安全提供服务 "+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒 💗";
+	}
+	siteTime();
+</script>
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script class="next-config" data-name="chatra" type="application/json">{"enable":true,"async":true,"id":"H8oixnws8SKYQkjBz"}</script>
+<script src="/js/third-party/chat/chatra.js"></script>
+<script async src="https://call.chatra.io/chatra.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":1}});</script></body>
+</html>
