@@ -85,7 +85,7 @@
 
   <url>
     <loc>https://skitii.vercel.app/</loc>
-    <lastmod>2022-02-13</lastmod>
+    <lastmod>2022-02-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -93,42 +93,42 @@
   
   <url>
     <loc>https://skitii.vercel.app/tags/Mysql/</loc>
-    <lastmod>2022-02-13</lastmod>
+    <lastmod>2022-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://skitii.vercel.app/tags/utf8mb4/</loc>
-    <lastmod>2022-02-13</lastmod>
+    <lastmod>2022-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://skitii.vercel.app/tags/java-mysql/</loc>
-    <lastmod>2022-02-13</lastmod>
+    <lastmod>2022-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://skitii.vercel.app/tags/%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/</loc>
-    <lastmod>2022-02-13</lastmod>
+    <lastmod>2022-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://skitii.vercel.app/tags/Redis/</loc>
-    <lastmod>2022-02-13</lastmod>
+    <lastmod>2022-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://skitii.vercel.app/tags/Cache/</loc>
-    <lastmod>2022-02-13</lastmod>
+    <lastmod>2022-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -137,21 +137,21 @@
   
   <url>
     <loc>https://skitii.vercel.app/categories/Mysql/</loc>
-    <lastmod>2022-02-13</lastmod>
+    <lastmod>2022-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://skitii.vercel.app/categories/Redis/</loc>
-    <lastmod>2022-02-13</lastmod>
+    <lastmod>2022-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://skitii.vercel.app/categories/Cache/</loc>
-    <lastmod>2022-02-13</lastmod>
+    <lastmod>2022-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
