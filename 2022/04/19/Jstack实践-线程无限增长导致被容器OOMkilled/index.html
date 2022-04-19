@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+
+<meta name="baidu-site-verification" content="code-AhZIkdDG9J" />
+<meta name="google-site-verification" content="PeC9Clz1swOOWEProA3d9p39srZKONgJreLma19x0Cc" />
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="PeC9Clz1swOOWEProA3d9p39srZKONgJreLma19x0Cc">
+  <meta name="baidu-site-verification" content="code-AhZIkdDG9J">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/purple/pace-theme-flash.css">
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"skitii.vercel.app","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.10.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+  <meta property="og:type" content="article">
+<meta property="og:title" content="Jstack实践-线程无限增长导致被容器OOMkilled">
+<meta property="og:url" content="https://skitii.vercel.app/2022/04/19/Jstack%E5%AE%9E%E8%B7%B5-%E7%BA%BF%E7%A8%8B%E6%97%A0%E9%99%90%E5%A2%9E%E9%95%BF%E5%AF%BC%E8%87%B4%E8%A2%AB%E5%AE%B9%E5%99%A8OOMkilled/index.html">
+<meta property="og:site_name" content="Skitii">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649205811746-7ad8d374-0284-435e-a7c1-e843d46aaa7a.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=113&id=u9445deab&margin=%5Bobject%20Object%5D&name=image.png&originHeight=113&originWidth=1011&originalType=binary&ratio=1&rotation=0&showTitle=false&size=44683&status=done&style=none&taskId=uda40d6d1-58de-4de9-9749-364045f5308&title=&width=1011">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649205954100-cf131c0a-a5bc-4797-a064-37f6881e32d5.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=805&id=ue60269a7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=805&originWidth=1328&originalType=binary&ratio=1&rotation=0&showTitle=false&size=370605&status=done&style=none&taskId=u184c7bea-822f-4bba-9255-e0ce06106e1&title=&width=1328">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649206157121-b31738e8-05b2-4a76-bd9b-2c8bdcff848b.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=521&id=ud1783b3f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=521&originWidth=1428&originalType=binary&ratio=1&rotation=0&showTitle=false&size=268355&status=done&style=none&taskId=ub89f1a99-b4fe-4965-9781-e33923ebc38&title=&width=1428">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649206379665-a70f65e8-bf11-4228-b0cf-dad6a5d8574f.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=1080&id=ud85ece79&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1080&originWidth=1675&originalType=binary&ratio=1&rotation=0&showTitle=false&size=791564&status=done&style=none&taskId=u44e5fb49-8bae-4a57-b175-7b747d3d436&title=&width=1675">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649206476389-3cb15253-346c-4ea8-a9f5-2c63ea106adf.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=763&id=u2fd9197c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=763&originWidth=1618&originalType=binary&ratio=1&rotation=0&showTitle=false&size=200790&status=done&style=none&taskId=uaaf5ddb7-bccc-426b-bb36-feae077d9a4&title=&width=1618">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649207075937-9b03976b-cfbd-474a-81cb-cdb20faccb3f.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=390&id=uabbb1300&margin=%5Bobject%20Object%5D&name=image.png&originHeight=390&originWidth=1199&originalType=binary&ratio=1&rotation=0&showTitle=false&size=70732&status=done&style=none&taskId=ueb4738b5-2777-4f54-bb74-f43af10f22c&title=&width=1199">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649207107360-092179a2-41f2-4a33-b44d-d492666cb281.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=412&id=u1e6fe115&margin=%5Bobject%20Object%5D&name=image.png&originHeight=412&originWidth=1104&originalType=binary&ratio=1&rotation=0&showTitle=false&size=140435&status=done&style=none&taskId=u6a2e757f-4121-4764-8c75-451e4b6f8e1&title=&width=1104">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649207161877-0bb45e80-d382-4ce3-9013-72a7b7635965.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=420&id=ua67faa85&margin=%5Bobject%20Object%5D&name=image.png&originHeight=420&originWidth=1018&originalType=binary&ratio=1&rotation=0&showTitle=false&size=79128&status=done&style=none&taskId=ua2fc14db-f5d4-4b7b-92d4-9a165b8283f&title=&width=1018">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649207181956-b50cc494-339f-4a4a-a601-d23f9869ec56.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=164&id=uea6c0053&margin=%5Bobject%20Object%5D&name=image.png&originHeight=164&originWidth=1028&originalType=binary&ratio=1&rotation=0&showTitle=false&size=30231&status=done&style=none&taskId=u5a0912ef-bccc-4e38-92e6-3a544f16b54&title=&width=1028">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649207662952-2d813e4b-0dd8-49ab-82f1-1254bc2c8f25.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=270&id=u93fae7b0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=270&originWidth=336&originalType=binary&ratio=1&rotation=0&showTitle=false&size=17557&status=done&style=none&taskId=u6462f0c1-60c2-4b9b-b2c3-4abb843dbf5&title=&width=336">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649207910862-93d26010-c80d-4389-823f-d5d0def9837d.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=790&id=u4349bf0d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=790&originWidth=862&originalType=binary&ratio=1&rotation=0&showTitle=false&size=231790&status=done&style=none&taskId=ub3b9b3fb-f5ed-42cb-83c2-ffb6ed6fd13&title=&width=862">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649208188461-2596e561-eda2-4f59-a1c9-064c406810de.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=553&id=ub7b3366f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=553&originWidth=1282&originalType=binary&ratio=1&rotation=0&showTitle=false&size=349119&status=done&style=none&taskId=u08233f99-455b-47f0-af9f-fd4f33c4aaf&title=&width=1282">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649208307525-a40303c6-42aa-4502-9883-2623358f5291.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=75&id=u5b75f912&margin=%5Bobject%20Object%5D&name=image.png&originHeight=75&originWidth=938&originalType=binary&ratio=1&rotation=0&showTitle=false&size=15354&status=done&style=none&taskId=u7363a734-8a5a-4a2c-8323-bc3fe60921f&title=&width=938">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649208567300-d552c053-336f-4aa5-bf13-4e2b47c1027d.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=358&id=ue016f51d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=358&originWidth=916&originalType=binary&ratio=1&rotation=0&showTitle=false&size=42771&status=done&style=none&taskId=uf5ce3248-1763-45fa-8a1c-1b47ac76525&title=&width=916">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649208625902-d481df6e-2b2c-4dcd-b8b1-01615367f1e8.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=525&id=u50683071&margin=%5Bobject%20Object%5D&name=image.png&originHeight=525&originWidth=780&originalType=binary&ratio=1&rotation=0&showTitle=false&size=183986&status=done&style=none&taskId=u0f318335-beb0-4a7b-a1e0-3cb0ca5d472&title=&width=780">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649208636585-d00e35dd-b168-4c77-8884-dc4f51713234.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=526&id=u07e5c1a8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=526&originWidth=1685&originalType=binary&ratio=1&rotation=0&showTitle=false&size=148796&status=done&style=none&taskId=u699a3675-063d-4074-bf2f-d1b89d82d2e&title=&width=1685">
+<meta property="article:published_time" content="2022-04-19T08:30:09.000Z">
+<meta property="article:modified_time" content="2022-04-19T08:34:19.162Z">
+<meta property="article:author" content="Skitii">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649205811746-7ad8d374-0284-435e-a7c1-e843d46aaa7a.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=113&id=u9445deab&margin=%5Bobject%20Object%5D&name=image.png&originHeight=113&originWidth=1011&originalType=binary&ratio=1&rotation=0&showTitle=false&size=44683&status=done&style=none&taskId=uda40d6d1-58de-4de9-9749-364045f5308&title=&width=1011">
+
+
+<link rel="canonical" href="https://skitii.vercel.app/2022/04/19/Jstack%E5%AE%9E%E8%B7%B5-%E7%BA%BF%E7%A8%8B%E6%97%A0%E9%99%90%E5%A2%9E%E9%95%BF%E5%AF%BC%E8%87%B4%E8%A2%AB%E5%AE%B9%E5%99%A8OOMkilled/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://skitii.vercel.app/2022/04/19/Jstack%E5%AE%9E%E8%B7%B5-%E7%BA%BF%E7%A8%8B%E6%97%A0%E9%99%90%E5%A2%9E%E9%95%BF%E5%AF%BC%E8%87%B4%E8%A2%AB%E5%AE%B9%E5%99%A8OOMkilled/","path":"2022/04/19/Jstack实践-线程无限增长导致被容器OOMkilled/","title":"Jstack实践-线程无限增长导致被容器OOMkilled"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Jstack实践-线程无限增长导致被容器OOMkilled | Skitii</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+
+  <!--pjax：防止跳转页面音乐暂停-->
+  <script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Skitii</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">A Lazy Guy.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+	
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8E%B0%E8%B1%A1"><span class="nav-number">1.</span> <span class="nav-text">现象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%B9%E5%9B%A0"><span class="nav-number">3.</span> <span class="nav-text">根因</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BF%AE%E5%A4%8D"><span class="nav-number">4.</span> <span class="nav-text">修复</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E6%88%90%E6%95%88"><span class="nav-number">5.</span> <span class="nav-text">最终成效</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%81%97%E7%95%99%E5%BE%85%E5%A4%84%E7%90%86%E9%97%AE%E9%A2%98"><span class="nav-number">6.0.0.1.</span> <span class="nav-text">遗留待处理问题</span></a></li></ol></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Skitii"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Skitii</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="sidebar-button site-overview-item animated">
+    <button><i class="fa fa-comment"></i>
+      Contact
+    </button>
+  </div>
+
+
+
+        </div>
+      </div>
+
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=300 height=450 src="//music.163.com/outchain/player?type=0&id=7179117219&auto=1&height=430"></iframe>
+
+    </div>
+  
+  </aside>
+  
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://skitii.vercel.app/2022/04/19/Jstack%E5%AE%9E%E8%B7%B5-%E7%BA%BF%E7%A8%8B%E6%97%A0%E9%99%90%E5%A2%9E%E9%95%BF%E5%AF%BC%E8%87%B4%E8%A2%AB%E5%AE%B9%E5%99%A8OOMkilled/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Skitii">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Skitii">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Jstack实践-线程无限增长导致被容器OOMkilled
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2022-04-19 16:30:09 / 修改时间：16:34:19" itemprop="dateCreated datePublished" datetime="2022-04-19T16:30:09+08:00">2022-04-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <meta name="referrer" content="no-referrer" />
+<span id="more"></span>
+
+<h1 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h1><p>容器每隔一段时候就会自动重启，大概一周左右。理由是OOMkilled。<br>查看jstack日志，发现里面竟有3319个线程在运行。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649205811746-7ad8d374-0284-435e-a7c1-e843d46aaa7a.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=113&id=u9445deab&margin=%5Bobject%20Object%5D&name=image.png&originHeight=113&originWidth=1011&originalType=binary&ratio=1&rotation=0&showTitle=false&size=44683&status=done&style=none&taskId=uda40d6d1-58de-4de9-9749-364045f5308&title=&width=1011" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649205954100-cf131c0a-a5bc-4797-a064-37f6881e32d5.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=805&id=ue60269a7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=805&originWidth=1328&originalType=binary&ratio=1&rotation=0&showTitle=false&size=370605&status=done&style=none&taskId=u184c7bea-822f-4bba-9255-e0ce06106e1&title=&width=1328" alt="image.png"></p>
+<h1 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h1><p>看看这些线程都在做什么？（图表来源于fastthread.io）<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649206157121-b31738e8-05b2-4a76-bd9b-2c8bdcff848b.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=521&id=ud1783b3f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=521&originWidth=1428&originalType=binary&ratio=1&rotation=0&showTitle=false&size=268355&status=done&style=none&taskId=ub89f1a99-b4fe-4965-9781-e33923ebc38&title=&width=1428" alt="image.png"><br>可以看到有1578个pool，和1485个消费线程。而这里就占了90%。所以肯定有点问题。<br>于是就可以详细看pool和这个消费线程在做啥。<br>pool基本都是两个两个一组双数增长。而且也看不到什么业务代码。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649206379665-a70f65e8-bf11-4228-b0cf-dad6a5d8574f.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=1080&id=ud85ece79&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1080&originWidth=1675&originalType=binary&ratio=1&rotation=0&showTitle=false&size=791564&status=done&style=none&taskId=u44e5fb49-8bae-4a57-b175-7b747d3d436&title=&width=1675" alt="image.png"><br>消费线程也是两个两个的，一个上行，一个下行。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649206476389-3cb15253-346c-4ea8-a9f5-2c63ea106adf.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=763&id=u2fd9197c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=763&originWidth=1618&originalType=binary&ratio=1&rotation=0&showTitle=false&size=200790&status=done&style=none&taskId=uaaf5ddb7-bccc-426b-bb36-feae077d9a4&title=&width=1618" alt="image.png"><br>那只能从业务代码出发了。<br>从代码中搜索下行回复消息，找到了<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649207075937-9b03976b-cfbd-474a-81cb-cdb20faccb3f.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=390&id=uabbb1300&margin=%5Bobject%20Object%5D&name=image.png&originHeight=390&originWidth=1199&originalType=binary&ratio=1&rotation=0&showTitle=false&size=70732&status=done&style=none&taskId=ueb4738b5-2777-4f54-bb74-f43af10f22c&title=&width=1199" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649207107360-092179a2-41f2-4a33-b44d-d492666cb281.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=412&id=u1e6fe115&margin=%5Bobject%20Object%5D&name=image.png&originHeight=412&originWidth=1104&originalType=binary&ratio=1&rotation=0&showTitle=false&size=140435&status=done&style=none&taskId=u6a2e757f-4121-4764-8c75-451e4b6f8e1&title=&width=1104" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649207161877-0bb45e80-d382-4ce3-9013-72a7b7635965.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=420&id=ua67faa85&margin=%5Bobject%20Object%5D&name=image.png&originHeight=420&originWidth=1018&originalType=binary&ratio=1&rotation=0&showTitle=false&size=79128&status=done&style=none&taskId=ua2fc14db-f5d4-4b7b-92d4-9a165b8283f&title=&width=1018" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649207181956-b50cc494-339f-4a4a-a601-d23f9869ec56.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=164&id=uea6c0053&margin=%5Bobject%20Object%5D&name=image.png&originHeight=164&originWidth=1028&originalType=binary&ratio=1&rotation=0&showTitle=false&size=30231&status=done&style=none&taskId=u5a0912ef-bccc-4e38-92e6-3a544f16b54&title=&width=1028" alt="image.png"></p>
+<h1 id="根因"><a href="#根因" class="headerlink" title="根因"></a>根因</h1><p>大致逻辑是，有个设备上下线的接口。</p>
+<ol>
+<li>每隔7分钟调用设备上线接口</li>
+<li>触发iotClient的start(),里面会new IotMqttService()</li>
+<li>然后触发线程池的创建，以及上下行消息的提交</li>
+<li>触发两个监听两个阻塞队列读取上下行消息。</li>
+</ol>
+<p>这就造成了线程数不断增长。最终导致超出容器分配的内存而被OOMkilled。</p>
+<h1 id="修复"><a href="#修复" class="headerlink" title="修复"></a>修复</h1><p><strong>初始思路</strong><br>设备下线时，触发线程池的关闭。梳理下线逻辑，在内部的一个clear方法，将线程池关掉。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649207662952-2d813e4b-0dd8-49ab-82f1-1254bc2c8f25.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=270&id=u93fae7b0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=270&originWidth=336&originalType=binary&ratio=1&rotation=0&showTitle=false&size=17557&status=done&style=none&taskId=u6462f0c1-60c2-4b9b-b2c3-4abb843dbf5&title=&width=336" alt="image.png"><br>但是写完，测试的时候发现线程数依旧在涨（这里在测试环境模拟了线上环境，然后通过脚本一直在跑请求），而且我明明都shutdownNow了，还是依旧会有消息线程的增长。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649207910862-93d26010-c80d-4389-823f-d5d0def9837d.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=790&id=u4349bf0d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=790&originWidth=862&originalType=binary&ratio=1&rotation=0&showTitle=false&size=231790&status=done&style=none&taskId=ub3b9b3fb-f5ed-42cb-83c2-ffb6ed6fd13&title=&width=862" alt="image.png"><br>于是我在while(true)内部增加了中断处理。<br>但是神奇的是，线程数还是在涨。</p>
+<p>于是我在线程池关闭之后，通过一个异步线程打印当前程序的线程数依旧线程名称。发现消息线程确实会被处理掉，但是还是有这个pool-thread。那这个pool-thread是在哪里开启的呢？<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649208188461-2596e561-eda2-4f59-a1c9-064c406810de.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=553&id=ub7b3366f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=553&originWidth=1282&originalType=binary&ratio=1&rotation=0&showTitle=false&size=349119&status=done&style=none&taskId=u08233f99-455b-47f0-af9f-fd4f33c4aaf&title=&width=1282" alt="image.png"><br>�回到fastthread.io,看到这个pool-thread是通过ScheduledThreadPoo触发的。同样的，代码中大概率是通过newScheduledThreadPool创建的线程池，就搜一下，果然发现了这个。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649208307525-a40303c6-42aa-4502-9883-2623358f5291.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=75&id=u5b75f912&margin=%5Bobject%20Object%5D&name=image.png&originHeight=75&originWidth=938&originalType=binary&ratio=1&rotation=0&showTitle=false&size=15354&status=done&style=none&taskId=u7363a734-8a5a-4a2c-8323-bc3fe60921f&title=&width=938" alt="image.png"><br>不啰嗦了，这个的原因是：创建这个IotMqttService的时候也会初始化一个日志打印的线程池，也会有两个线程在做日志打印的工作。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649208567300-d552c053-336f-4aa5-bf13-4e2b47c1027d.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=358&id=ue016f51d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=358&originWidth=916&originalType=binary&ratio=1&rotation=0&showTitle=false&size=42771&status=done&style=none&taskId=uf5ce3248-1763-45fa-8a1c-1b47ac76525&title=&width=916" alt="image.png"><br>于是我把这个改成了单例模式。<br>到这里，基本上才算清晰，<br>为啥线程池的shutdownNow不生效？(没有做break处理，shutdownNow只会将正在执行的线程进行中断，而业务上的线程在死循环等待，中断之后又进入了循环)<br>为啥pool-thread总是双数增长？（消费线程也是个线程池，之后业务设置了名称为消费线程，不然也是pool）</p>
+<h1 id="最终成效"><a href="#最终成效" class="headerlink" title="最终成效"></a>最终成效</h1><p><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649208625902-d481df6e-2b2c-4dcd-b8b1-01615367f1e8.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=525&id=u50683071&margin=%5Bobject%20Object%5D&name=image.png&originHeight=525&originWidth=780&originalType=binary&ratio=1&rotation=0&showTitle=false&size=183986&status=done&style=none&taskId=u0f318335-beb0-4a7b-a1e0-3cb0ca5d472&title=&width=780" alt="image.png"><br>异步打印程序的线程结果<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1649208636585-d00e35dd-b168-4c77-8884-dc4f51713234.png#clientId=ud58f7856-850e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=526&id=u07e5c1a8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=526&originWidth=1685&originalType=binary&ratio=1&rotation=0&showTitle=false&size=148796&status=done&style=none&taskId=u699a3675-063d-4074-bf2f-d1b89d82d2e&title=&width=1685" alt="image.png"><br>开了一个watch命令，没20s跑一次请求，跑了一下午，线程数基本都是稳定在105.</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p><strong>线程不断增长问题排查过程总结</strong></p>
+<ol>
+<li>top -Hp <pid> 查看cpu情况和线程情况</li>
+<li>jstack <pid> &gt;&gt; jstack.log 分析jstack日志（通过fastthread.io分析）</li>
+<li>通过fastthread.io的线程分组查看线程详情。</li>
+<li>通过关键词定位业务逻辑。</li>
+<li>分析业务逻辑，复现&amp;解决问题</li>
+</ol>
+<p><strong>注意⚠️</strong><br>线程池使用还是要谨慎啊，千万要注意关闭的问题。</p>
+<h4 id="遗留待处理问题"><a href="#遗留待处理问题" class="headerlink" title="遗留待处理问题"></a>遗留待处理问题</h4><p>一个线程占用多少内存？【1.9g的容器内存，大概可以开启9900多个线程，加上堆内存之类的，一个线程大概几百kb】【csdn上有个人说大概100k，看起来还算可信。<a target="_blank" rel="noopener" href="https://blog.csdn.net/spytian/article/details/113637759">https://blog.csdn.net/spytian/article/details/113637759</a>】<br>如果操作系统内存足够，一个Java程序可以无限增加线程吗？【应该会受JVM堆外内存限制，但是具体堆外内存是多少，怎么设置，我也还不太清楚】</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/JVM/" rel="tag"># JVM</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/04/19/Jstack-%E6%8A%93%E4%BD%8F%E6%91%B8%E9%B1%BC%E7%9A%84%E7%BA%BF%E7%A8%8B/" rel="prev" title="Jstack-抓住摸鱼的线程">
+                  <i class="fa fa-chevron-left"></i> Jstack-抓住摸鱼的线程
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Skitii</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">23k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">21 分钟</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+<span id="sitetime"></span>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+		Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+		year - 作为date对象的年份，为4位年份值
+		month - 0-11之间的整数，做为date对象的月份
+		day - 1-31之间的整数，做为date对象的天数
+		hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+		minutes - 0-59之间的整数，做为date对象的分钟数
+		seconds - 0-59之间的整数，做为date对象的秒数
+		microseconds - 0-999之间的整数，做为date对象的毫秒数
+        */
+		var t1 = Date.UTC(2022,02,07,15,00,00); //北京时间2018-2-13 00:00:00
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" @Skitii 已安全提供服务 "+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒 💗";
+	}
+	siteTime();
+</script>
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script class="next-config" data-name="chatra" type="application/json">{"enable":true,"async":true,"id":"H8oixnws8SKYQkjBz"}</script>
+<script src="/js/third-party/chat/chatra.js"></script>
+<script async src="https://call.chatra.io/chatra.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":1}});</script></body>
+</html>
