@@ -27,33 +27,35 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"skitii.vercel.app","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.10.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
 
-  <meta name="description" content="Redis的设计中，有一个被大家熟知的概念，就是在6.0之前，Redis是单线程模型，6.0之后才引入的多线程。">
+  <meta name="description" content="回顾一下之前写的分布式锁的实现逻辑">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Redis网络事件模型">
-<meta property="og:url" content="https://skitii.vercel.app/2022/02/08/Redis%E7%BD%91%E7%BB%9C%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:title" content="Redis分布式锁">
+<meta property="og:url" content="https://skitii.vercel.app/2022/04/27/Redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/index.html">
 <meta property="og:site_name" content="Skitii">
-<meta property="og:description" content="Redis的设计中，有一个被大家熟知的概念，就是在6.0之前，Redis是单线程模型，6.0之后才引入的多线程。">
+<meta property="og:description" content="回顾一下之前写的分布式锁的实现逻辑">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/__puml/8edd221a204eefb854da24682a8dd270.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcblxuc3RhcnRcblxuOuWQr-WKqOacjeWKoeWZqOWRveS7pDtcbjror7vlj5bmnI3liqHlmajphY3nva47XG465Yid5aeL5YyW5pyN5Yqh5ZmoO1xuOuS7juejgeebmOivu-WPluaVsOaNrjtcbjrlkK_liqjkuovku7blvqrnjq87XG46YmVmb3Jlc2xlZXDlm57osIPvvIjmnIDkuLvopoHnmoTlt6XkvZzlsLHmmK_lsIblvoXlhpnlm57nmoTmlbDmja7lhpnlm57nu5nlrqLmiLfnq6_vvIzlpoLmnpzlhpnkuI3lrozlsLHms6jlhozlhpnlhaXlm57osIPlh73mlbDvvIk7XG466K6h566X5LiL5qyh5pe26Ze05LqL5Lu255qE5pe26Ze0O1xuOuiOt-WPluWGheaguOivu-WGmeS6i-S7tu-8jOWwhuebuOWFs-ivu-WGmeS6i-S7tuaUvuWFpeWIsOWkhOeQhuWIl-ihqOS4rTtcbmlmICjmnInkuovku7blj5HnlJ8pIHRoZW4oeWVzKVxuXHQ65aSE55CG5paH5Lu25LqL5Lu25YiG5Y-RO1xuXHRzcGxpdFxuXHRcdDrlpITnkIbov57mjqXlupTnrZQ7XG5cdHNwbGl0IGFnYWluIFxuXHRcdDrlpITnkIbor7fmsYLlpITnkIbkuovku7Y7XG5cdHNwbGl0IGFnYWluIFxuXHRcdDrlpITnkIblhpnlm57kuovku7Y7XG5cdGVuZCBzcGxpdFxuZWxzZSAobm8pXG5cdDrlpITnkIbml7bpl7Tkuovku7Y7XG5lbmRpZlxuc3RvcFxuXG5AZW5kdW1sIiwidXJsIjoiaHR0cHM6Ly9jZG4ubmxhcmsuY29tL3l1cXVlL19fcHVtbC84ZWRkMjIxYTIwNGVlZmI4NTRkYTI0NjgyYThkZDI3MC5zdmciLCJpZCI6Inh2MUNyIiwibWFyZ2luIjp7InRvcCI6dHJ1ZSwiYm90dG9tIjp0cnVlfSwiY2FyZCI6ImRpYWdyYW0ifQ==">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/21760570/1636026374931-90221e1e-28be-438c-9e5c-2080e029ad28.png#clientId=u56ea2d30-4eee-4&from=paste&height=1296&id=ucdce5fa8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1296&originWidth=1240&originalType=binary&ratio=1&size=383452&status=done&style=none&taskId=u5164b8ca-ef62-4aff-9b0f-97970bb423e&width=1240">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/21760570/1636027604742-e71f6871-7b65-4868-8e43-352138d22d19.png#clientId=u56ea2d30-4eee-4&from=paste&height=1988&id=u1cc811f7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1988&originWidth=2092&originalType=binary&ratio=1&size=1008800&status=done&style=none&taskId=u061e7484-5d3b-4883-a4fc-8ddba1777ca&width=2092">
-<meta property="article:published_time" content="2022-02-08T11:31:59.000Z">
-<meta property="article:modified_time" content="2022-02-10T11:13:02.204Z">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1650869288591-477858f4-5170-45c4-a427-709cf505fa5d.png#clientId=ue8d70bce-cde0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=738&id=u500182bc&margin=%5Bobject%20Object%5D&name=image.png&originHeight=738&originWidth=1545&originalType=binary&ratio=1&rotation=0&showTitle=false&size=283038&status=done&style=none&taskId=ucec26631-0c24-48f1-883c-2d9ed6d6575&title=&width=1545">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1650869302380-d4194ad9-65f8-46b3-a22f-e681c1864645.png#clientId=ue8d70bce-cde0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=330&id=u79eded21&margin=%5Bobject%20Object%5D&name=image.png&originHeight=330&originWidth=1411&originalType=binary&ratio=1&rotation=0&showTitle=false&size=31509&status=done&style=none&taskId=u739d4845-578e-4dc7-9eff-3eec55ec5af&title=&width=1411">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1650869332933-e9edfae9-9676-4074-a323-94873d536e1f.png#clientId=ue8d70bce-cde0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=1079&id=ue8a7b0c3&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1079&originWidth=1085&originalType=binary&ratio=1&rotation=0&showTitle=false&size=127331&status=done&style=none&taskId=ub5eca672-9f03-4503-aa2b-1080cb77258&title=&width=1085">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1650869362415-229602ad-ccbb-4bbe-bbe5-5fdbf24169a7.png#clientId=ue8d70bce-cde0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=406&id=u2e278575&margin=%5Bobject%20Object%5D&name=image.png&originHeight=406&originWidth=491&originalType=binary&ratio=1&rotation=0&showTitle=false&size=61670&status=done&style=none&taskId=u1276c3af-9287-4f42-9fce-d785b8962dd&title=&width=491">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1650869370736-73556b7b-7338-4ea2-9bf5-452ecbb2728c.png#clientId=ue8d70bce-cde0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=86&id=u263ea20a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=86&originWidth=610&originalType=binary&ratio=1&rotation=0&showTitle=false&size=11991&status=done&style=none&taskId=uc4bc6b5c-4352-44a9-90fb-8450a166c3f&title=&width=610">
+<meta property="article:published_time" content="2022-04-27T01:30:31.000Z">
+<meta property="article:modified_time" content="2022-04-27T01:47:22.159Z">
 <meta property="article:author" content="Skitii">
 <meta property="article:tag" content="Redis">
 <meta property="article:tag" content="Cache">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://cdn.nlark.com/yuque/__puml/8edd221a204eefb854da24682a8dd270.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcblxuc3RhcnRcblxuOuWQr-WKqOacjeWKoeWZqOWRveS7pDtcbjror7vlj5bmnI3liqHlmajphY3nva47XG465Yid5aeL5YyW5pyN5Yqh5ZmoO1xuOuS7juejgeebmOivu-WPluaVsOaNrjtcbjrlkK_liqjkuovku7blvqrnjq87XG46YmVmb3Jlc2xlZXDlm57osIPvvIjmnIDkuLvopoHnmoTlt6XkvZzlsLHmmK_lsIblvoXlhpnlm57nmoTmlbDmja7lhpnlm57nu5nlrqLmiLfnq6_vvIzlpoLmnpzlhpnkuI3lrozlsLHms6jlhozlhpnlhaXlm57osIPlh73mlbDvvIk7XG466K6h566X5LiL5qyh5pe26Ze05LqL5Lu255qE5pe26Ze0O1xuOuiOt-WPluWGheaguOivu-WGmeS6i-S7tu-8jOWwhuebuOWFs-ivu-WGmeS6i-S7tuaUvuWFpeWIsOWkhOeQhuWIl-ihqOS4rTtcbmlmICjmnInkuovku7blj5HnlJ8pIHRoZW4oeWVzKVxuXHQ65aSE55CG5paH5Lu25LqL5Lu25YiG5Y-RO1xuXHRzcGxpdFxuXHRcdDrlpITnkIbov57mjqXlupTnrZQ7XG5cdHNwbGl0IGFnYWluIFxuXHRcdDrlpITnkIbor7fmsYLlpITnkIbkuovku7Y7XG5cdHNwbGl0IGFnYWluIFxuXHRcdDrlpITnkIblhpnlm57kuovku7Y7XG5cdGVuZCBzcGxpdFxuZWxzZSAobm8pXG5cdDrlpITnkIbml7bpl7Tkuovku7Y7XG5lbmRpZlxuc3RvcFxuXG5AZW5kdW1sIiwidXJsIjoiaHR0cHM6Ly9jZG4ubmxhcmsuY29tL3l1cXVlL19fcHVtbC84ZWRkMjIxYTIwNGVlZmI4NTRkYTI0NjgyYThkZDI3MC5zdmciLCJpZCI6Inh2MUNyIiwibWFyZ2luIjp7InRvcCI6dHJ1ZSwiYm90dG9tIjp0cnVlfSwiY2FyZCI6ImRpYWdyYW0ifQ==">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1650869288591-477858f4-5170-45c4-a427-709cf505fa5d.png#clientId=ue8d70bce-cde0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=738&id=u500182bc&margin=%5Bobject%20Object%5D&name=image.png&originHeight=738&originWidth=1545&originalType=binary&ratio=1&rotation=0&showTitle=false&size=283038&status=done&style=none&taskId=ucec26631-0c24-48f1-883c-2d9ed6d6575&title=&width=1545">
 
 
-<link rel="canonical" href="https://skitii.vercel.app/2022/02/08/Redis%E7%BD%91%E7%BB%9C%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B/">
+<link rel="canonical" href="https://skitii.vercel.app/2022/04/27/Redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://skitii.vercel.app/2022/02/08/Redis%E7%BD%91%E7%BB%9C%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B/","path":"2022/02/08/Redis网络事件模型/","title":"Redis网络事件模型"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://skitii.vercel.app/2022/04/27/Redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/","path":"2022/04/27/Redis分布式锁/","title":"Redis分布式锁"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Redis网络事件模型 | Skitii</title>
+<title>Redis分布式锁 | Skitii</title>
   
 
 
@@ -138,7 +140,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">单线程模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="nav-number">1.1.</span> <span class="nav-text">服务器启动流程图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%9C%A8%E9%97%AE%E9%A2%98"><span class="nav-number">1.2.</span> <span class="nav-text">存在问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">多线程模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">3.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%A4%E8%AF%86%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">1.</span> <span class="nav-text">认识分布式锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%89%B9%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">分布式锁特性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">分布式锁的实现原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redisson%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">4.</span> <span class="nav-text">Redisson实现分布式锁源码分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redisson%E6%9E%B6%E6%9E%84"><span class="nav-number">5.</span> <span class="nav-text">Redisson架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RedLock%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90"><span class="nav-number">6.</span> <span class="nav-text">RedLock算法分析</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -215,7 +217,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://skitii.vercel.app/2022/02/08/Redis%E7%BD%91%E7%BB%9C%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B/">
+    <link itemprop="mainEntityOfPage" href="https://skitii.vercel.app/2022/04/27/Redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpeg">
@@ -228,7 +230,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Redis网络事件模型
+          Redis分布式锁
         </h1>
 
         <div class="post-meta-container">
@@ -238,15 +240,9 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2022-02-08 19:31:59" itemprop="dateCreated datePublished" datetime="2022-02-08T19:31:59+08:00">2022-02-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-02-10 19:13:02" itemprop="dateModified" datetime="2022-02-10T19:13:02+08:00">2022-02-10</time>
+      <time title="创建时间：2022-04-27 09:30:31 / 修改时间：09:47:22" itemprop="dateCreated datePublished" datetime="2022-04-27T09:30:31+08:00">2022-04-27</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -272,7 +268,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.8k</span>
+      <span>2.4k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -283,7 +279,7 @@
     </span>
 </div>
 
-            <div class="post-description">Redis的设计中，有一个被大家熟知的概念，就是在6.0之前，Redis是单线程模型，6.0之后才引入的多线程。</div>
+            <div class="post-description">回顾一下之前写的分布式锁的实现逻辑</div>
         </div>
       </header>
 
@@ -293,53 +289,45 @@
     <div class="post-body" itemprop="articleBody">
         <meta name="referrer" content="no-referrer" />
 <span id="more"></span>
-Redis的设计中，有一个被大家熟知的概念，就是在6.0之前，Redis是单线程模型，6.0之后才引入的多线程。
-尽管如此，单线程模型下的redis依旧性能强劲。
-所以今天，我们就来好好研究一下redis的线程通信模型。
 
-<h1 id="单线程模型"><a href="#单线程模型" class="headerlink" title="单线程模型"></a>单线程模型</h1><p>redis是2009推出的，在2019年才引入多线程模型。为什么呢？<br>单线程</p>
-<ol>
-<li>简单可维护</li>
-<li>避免线程上下文切换开销</li>
-<li>避免同步开销</li>
+<h1 id="认识分布式锁"><a href="#认识分布式锁" class="headerlink" title="认识分布式锁"></a>认识分布式锁</h1><p>Distributed locks are a very useful primitive in many environments where different processes must operate with shared resources in a mutually exclusive way.<br>分布式锁是在分布式环境中保证不同的进程以相互独立的方式操作共享资源的一种实现方式。（说白了，分布式锁就是在分布式环境下实现进程同步操作共享资源的方式）<br>和本地锁（synchronized,reentrantlock）相比，分布式锁有什么不一样的地方呢？<br>场景不同，分布式场景。</p>
+<h1 id="分布式锁特性"><a href="#分布式锁特性" class="headerlink" title="分布式锁特性"></a>分布式锁特性</h1><ol>
+<li>安全性：相互独立，任何情况下，只能有一个客户端持有锁</li>
+<li>死锁释放：即使持有锁的客户端宕机了，其他客户端最终总能获取锁。</li>
+<li>容错性：只要大多数的Redis节点无故障，客户端总能获取锁和释放锁。</li>
 </ol>
-<p>大体上，Redis的单线程模型是标准的<strong>Reador模式</strong>，基于<strong>I&#x2F;O多路复用</strong>实现的，一个统一的事件循环处理器去接受事件，然后分派到不同的处理器去处理。</p>
-<h2 id="服务器启动流程图"><a href="#服务器启动流程图" class="headerlink" title="服务器启动流程图"></a>服务器启动流程图</h2><p><img src="https://cdn.nlark.com/yuque/__puml/8edd221a204eefb854da24682a8dd270.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcblxuc3RhcnRcblxuOuWQr-WKqOacjeWKoeWZqOWRveS7pDtcbjror7vlj5bmnI3liqHlmajphY3nva47XG465Yid5aeL5YyW5pyN5Yqh5ZmoO1xuOuS7juejgeebmOivu-WPluaVsOaNrjtcbjrlkK_liqjkuovku7blvqrnjq87XG46YmVmb3Jlc2xlZXDlm57osIPvvIjmnIDkuLvopoHnmoTlt6XkvZzlsLHmmK_lsIblvoXlhpnlm57nmoTmlbDmja7lhpnlm57nu5nlrqLmiLfnq6_vvIzlpoLmnpzlhpnkuI3lrozlsLHms6jlhozlhpnlhaXlm57osIPlh73mlbDvvIk7XG466K6h566X5LiL5qyh5pe26Ze05LqL5Lu255qE5pe26Ze0O1xuOuiOt-WPluWGheaguOivu-WGmeS6i-S7tu-8jOWwhuebuOWFs-ivu-WGmeS6i-S7tuaUvuWFpeWIsOWkhOeQhuWIl-ihqOS4rTtcbmlmICjmnInkuovku7blj5HnlJ8pIHRoZW4oeWVzKVxuXHQ65aSE55CG5paH5Lu25LqL5Lu25YiG5Y-RO1xuXHRzcGxpdFxuXHRcdDrlpITnkIbov57mjqXlupTnrZQ7XG5cdHNwbGl0IGFnYWluIFxuXHRcdDrlpITnkIbor7fmsYLlpITnkIbkuovku7Y7XG5cdHNwbGl0IGFnYWluIFxuXHRcdDrlpITnkIblhpnlm57kuovku7Y7XG5cdGVuZCBzcGxpdFxuZWxzZSAobm8pXG5cdDrlpITnkIbml7bpl7Tkuovku7Y7XG5lbmRpZlxuc3RvcFxuXG5AZW5kdW1sIiwidXJsIjoiaHR0cHM6Ly9jZG4ubmxhcmsuY29tL3l1cXVlL19fcHVtbC84ZWRkMjIxYTIwNGVlZmI4NTRkYTI0NjgyYThkZDI3MC5zdmciLCJpZCI6Inh2MUNyIiwibWFyZ2luIjp7InRvcCI6dHJ1ZSwiYm90dG9tIjp0cnVlfSwiY2FyZCI6ImRpYWdyYW0ifQ==">详细图解<br><img src="https://cdn.nlark.com/yuque/0/2021/png/21760570/1636026374931-90221e1e-28be-438c-9e5c-2080e029ad28.png#clientId=u56ea2d30-4eee-4&from=paste&height=1296&id=ucdce5fa8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1296&originWidth=1240&originalType=binary&ratio=1&size=383452&status=done&style=none&taskId=u5164b8ca-ef62-4aff-9b0f-97970bb423e&width=1240" alt="image.png"></p>
-<h2 id="存在问题"><a href="#存在问题" class="headerlink" title="存在问题"></a>存在问题</h2><p><strong>单线程应该最怕一个问题，就是阻塞。有些操作就是要阻塞进行的，比如删除。</strong></p>
-<blockquote>
-<p>看看作者是怎么想的<br><a target="_blank" rel="noopener" href="http://antirez.com/news/93">http://antirez.com/news/93</a><br>只要一个操作非常耗时，就会导致后面的请求都被阻塞住。简单的查询应该不存在这个问题，但如果是删除很多大的key-value。就可能会出现。然后redis在4.0之后引入了多线程异步处理的方式。并增加了一些异步处理命令。<br><strong>核心问题就是如何处理大的key-value？最具代表性的就是删除大量的key-value。</strong></p>
-</blockquote>
+<h1 id="分布式锁的实现原理"><a href="#分布式锁的实现原理" class="headerlink" title="分布式锁的实现原理"></a>分布式锁的实现原理</h1><p>锁主要需要解决的问题</p>
 <ol>
-<li><p>渐进式地延迟删除。【将要删除的key分批写入到队列中，但是单线程怎么触发呢？利用定时器渐进的删除。】</p>
-<blockquote>
-<p>队列采用hash table的形式存储。然后利用timer渐进式删除，释放内存。每次删除timer都要知道从哪个地方开始释放内存。然后他采用的是下标的方式记录下次要删除的位置。<br>但是这种方式存在一个问题，就是进行如下操作<br>WHILE 1<br> SADD myset element1 element2 … many many many elements<br> DEL myset<br>END<br>如果后台删除操作远慢于添加操作，就会导致内存无限增长。【怎么解决，加快删除频率嘛】<br>他做了两个操作来调整定时器解决这个问题。</p>
+<li>互斥访问</li>
+<li>死锁问题</li>
+<li>可重入</li>
+<li>阻塞等待</li>
+</ol>
+<p>Redis分布式锁是怎么做的呢？<br>其实就一条语句<br>SET resource_name my_random_value NX PX 30000<br>当客户端需要获取锁时，就往redis发送上面的语句，如果resource_name这个key已经存在了，就无法插入到redis中，也就无法获取锁。<br>如果没有，就将 resource_name -&gt; my_random_value 设置到redis中。当其他客户端也想访问该资源时，就不能访问了，这就解决了互斥访问问题。<br>那客户端在处理业务的情况下宕机了怎么办，由于redis自带的失效时间处理，就很好的解决了死锁问题。<br>那客户端获取到了锁，在执行业务的时候，又有个地方要获取该资源的锁，怎么办呢？我们可以看看redission是怎么处理的。<br>那如果客户端没获取到锁，想一直等待锁呢？</p>
+<p>可能遇到的问题<br>1.执行过程中，锁的失效时间到期了怎么办？redission设置了一个定时器，每到失效时间的1&#x2F;3，如果业务还没执行完，就刷新失效时间。<br>2.为什么要设置唯一的value？防止别人误解锁。设置唯一的value，只有加锁的人才能解锁。<br>3.设置过程中master节点宕机了怎么办？</p>
+<h1 id="Redisson实现分布式锁源码分析"><a href="#Redisson实现分布式锁源码分析" class="headerlink" title="Redisson实现分布式锁源码分析"></a>Redisson实现分布式锁源码分析</h1><p>redission分布式锁的使用<br>1.引入依赖<br><dependency><groupId>org.redisson</groupId> <artifactId>redisson</artifactId> <version>3.13.5</version> </dependency><br>2.配置<br>单机配置<br>config.useSingleServers().addAdress(“redis:&#x2F;&#x2F;127.0.0.1:6379”);<br>集群配置<br>config.useClusterServers().addAdress(“redis:&#x2F;&#x2F;127.0.0.1:6379”).addAdress(“redis:&#x2F;&#x2F;127.0.0.1:6380”);<br>3.使用<br>RLock lock &#x3D; redissionClient.getLock(random_key);<br>lock.lock();<br>lock.unLock();</p>
+<p>过程分析<br>加锁<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1650869288591-477858f4-5170-45c4-a427-709cf505fa5d.png#clientId=ue8d70bce-cde0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=738&id=u500182bc&margin=%5Bobject%20Object%5D&name=image.png&originHeight=738&originWidth=1545&originalType=binary&ratio=1&rotation=0&showTitle=false&size=283038&status=done&style=none&taskId=ucec26631-0c24-48f1-883c-2d9ed6d6575&title=&width=1545" alt="image.png"></p>
+<p>解锁</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1650869302380-d4194ad9-65f8-46b3-a22f-e681c1864645.png#clientId=ue8d70bce-cde0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=330&id=u79eded21&margin=%5Bobject%20Object%5D&name=image.png&originHeight=330&originWidth=1411&originalType=binary&ratio=1&rotation=0&showTitle=false&size=31509&status=done&style=none&taskId=u739d4845-578e-4dc7-9eff-3eec55ec5af&title=&width=1411" alt="image.png"></p>
+<h1 id="Redisson架构"><a href="#Redisson架构" class="headerlink" title="Redisson架构"></a>Redisson架构</h1><p><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1650869332933-e9edfae9-9676-4074-a323-94873d536e1f.png#clientId=ue8d70bce-cde0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=1079&id=ue8a7b0c3&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1079&originWidth=1085&originalType=binary&ratio=1&rotation=0&showTitle=false&size=127331&status=done&style=none&taskId=ub5eca672-9f03-4503-aa2b-1080cb77258&title=&width=1085" alt="image.png"></p>
+<h1 id="RedLock算法分析"><a href="#RedLock算法分析" class="headerlink" title="RedLock算法分析"></a>RedLock算法分析</h1><p>现在我们大概了解了一下redission的分布式锁实现，那么在集群模式下会不会有什么问题呢？<br>设想一个场景：</p>
 <ol>
-<li>检查内存趋势</li>
-<li>动态调整定时器的频率</li>
+<li>客户端A从master获取到锁</li>
+<li>在master将锁同步到slave之前，master宕掉了</li>
+<li>slave节点被晋级为master节点</li>
+<li>客户端B取得了同一个资源被客户端A已经获取到的另外一个锁。<strong>安全失效！</strong></li>
 </ol>
-</blockquote>
-<p>但是这会导致普通的删除还是要走这个逻辑去做删除。导致正常的删除操作速度下降了65%。</p>
-<blockquote>
-<p>​</p>
-</blockquote>
-</li>
-<li><p>lazy-free 用一个异步线程去做内存释放操作。</p>
-<blockquote>
-<p>如果有个线程在专门处理内存释放的问题。那么内存释放比内存申请要快得多。<br>但是引入了多线程就必要要考虑一个新的问题，就是共享数据。<br>如果数据只存在一个地方，需要的时候，通过引用的方式去获取，不是既节约了内存又节约了时间。<br>但是还是存在一些问题。举个例子，通过SUNIONSTORE合并两个集合。<br>如果只是引用其他两个集合的引用。但是这样的话，如果修改新的集合的值，旧集合的值也会跟着改变。<br>​</p>
-</blockquote>
-</li>
+<p>这个问题如何处理呢？</p>
+<p><strong>RedLock算法</strong><br>我们假设有5个Redis master节点，这是一个比较合理的设置，所以我们需要在5台机器上面或者5台虚拟机上面运行这些实例，这样保证他们不会同时都宕掉。<br>为了取到锁，客户端应该执行以下操作:</p>
+<ol>
+<li>获取当前Unix时间，以毫秒为单位。</li>
+<li>依次尝试从N个实例，使用相同的key和随机值获取锁。在步骤2，当向Redis设置锁时,客户端应该设置一个网络连接和响应超时时间，这个超时时间应该小于锁的失效时间。例如你的锁自动失效时间为10秒，则超时时间应该在5-50毫秒之间。这样可以避免服务器端Redis已经挂掉的情况下，客户端还在死死地等待响应结果。如果服务器端没有在规定时间内响应，客户端应该尽快尝试另外一个Redis实例。</li>
+<li>客户端使用当前时间减去开始获取锁时间（步骤1记录的时间）就得到获取锁使用的时间。当且仅当从大多数（这里是3个节点）的Redis节点都取到锁，并且使用的时间小于锁失效时间时，锁才算获取成功。</li>
+<li>如果取到了锁，key的真正有效时间等于有效时间减去获取锁所使用的时间（步骤3计算的结果）。</li>
+<li>如果因为某些原因，获取锁失败（_没有_在至少N&#x2F;2+1个Redis实例取到锁或者取锁时间已经超过了有效时间），客户端应该在所有的Redis实例上进行解锁（即便某些Redis实例根本就没有加锁成功）。</li>
 </ol>
-<blockquote>
-<p>最终他是通过拷贝数据的方式去解决。（这种方式可能也会引入一些问题， 但是从他后面的处理结果来看，应该还是这种方式比较合适）。<br>​</p>
-</blockquote>
-<blockquote>
-<p>到这里为止，我们可以看到，在3.2的时候，其实就已经引入了多线程处理。也增加了一个UNLINK命令，就是DEL的异步版本，区别在于，它会先去计算一下删除的开销，开销超过某个值的时候，才用异步的方式进行删除，否则还是用DEL的方式。</p>
-</blockquote>
-<p>​</p>
-<p>​</p>
-<h1 id="多线程模型"><a href="#多线程模型" class="headerlink" title="多线程模型"></a>多线程模型</h1><p>Redis在6.0版本之后引入了多线程模型。<br>一般来讲，从单线程的reactor模式变成多线程，应该是master-workers那种形式。就是主线程只负责解释事件。然后把事件分配给不同的worker去处理。<br>redis的多线程版本区别与正常的master-workers模式，在于，<br>主线程将命令请求放入到读队列中，然后分配给子线程去解析。主线程自旋等待子线程解析完。<br>然后执行命令，然后将请求放入写队列中，然后分配给子线程去写入客户端缓存。主线程自旋等待子线程解析完。最后还是由主线程执行最后的响应操作。<br><img src="https://cdn.nlark.com/yuque/0/2021/png/21760570/1636027604742-e71f6871-7b65-4868-8e43-352138d22d19.png#clientId=u56ea2d30-4eee-4&from=paste&height=1988&id=u1cc811f7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1988&originWidth=2092&originalType=binary&ratio=1&size=1008800&status=done&style=none&taskId=u061e7484-5d3b-4883-a4fc-8ddba1777ca&width=2092" alt="image.png"><br>​</p>
-<p>​</p>
-<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000039223696">https://segmentfault.com/a/1190000039223696</a> （一个redis的contributor写的博客）<br><a target="_blank" rel="noopener" href="http://antirez.com/news/93">http://antirez.com/news/93</a> （redis作者写的关于延迟删除的思考）<br><a target="_blank" rel="noopener" href="http://antirez.com/latest/0">http://antirez.com/latest/0</a> （redis写的文章的列表）<br><a target="_blank" rel="noopener" href="http://redisbook.com/preview/event/file_event.html">http://redisbook.com/preview/event/file_event.html</a> （redis设计与实现）<br><a target="_blank" rel="noopener" href="https://draveness.me/redis-io-multiplexing/">https://draveness.me/redis-io-multiplexing/</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/144805500">https://zhuanlan.zhihu.com/p/144805500</a> (redis流程图画的不错)</p>
+<p>锁真正的有效时间：MIN_VALIDITY &#x3D; TTL - (T2 - T1) - CLOCK_DRIFT .<br>TTL：锁的失效时间<br>T1：第一个获取到锁的时间<br>T2: 最后一个获取到锁的时间<br>CLOCK_DRIFT:时钟漂移（每台计算机的时间可能不同，所以集群中不同节点的通信可能会产生时钟漂移),因为基本都是以客户端的时间频率进行前进的，所以时钟漂移基本可以忽略不计。</p>
+<p>redission中RedLock实现<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1650869362415-229602ad-ccbb-4bbe-bbe5-5fdbf24169a7.png#clientId=ue8d70bce-cde0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=406&id=u2e278575&margin=%5Bobject%20Object%5D&name=image.png&originHeight=406&originWidth=491&originalType=binary&ratio=1&rotation=0&showTitle=false&size=61670&status=done&style=none&taskId=u1276c3af-9287-4f42-9fce-d785b8962dd&title=&width=491" alt="image.png"><br>但是有一个问题：这种操作不能保证每个锁都是发送到了不同的实例，如果所有的锁都在一个实例上，一样会遇到问题之前的问题。<br>于是，Redisson废弃了RedLock。Rlock的一些操作会直接同步到所有的slave节点。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1650869370736-73556b7b-7338-4ea2-9bf5-452ecbb2728c.png#clientId=ue8d70bce-cde0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=86&id=u263ea20a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=86&originWidth=610&originalType=binary&ratio=1&rotation=0&showTitle=false&size=11991&status=done&style=none&taskId=uc4bc6b5c-4352-44a9-90fb-8450a166c3f&title=&width=610" alt="image.png"><br>然后我就跑去测试了一下，经测试：<br>RLock操作会发送到每一个slave节点（Redisson只配master节点，slave节点也会收到）。</p>
 
     </div>
 
@@ -357,11 +345,11 @@ Redis的设计中，有一个被大家熟知的概念，就是在6.0之前，Red
 
           <div class="post-nav">
             <div class="post-nav-item">
+                <a href="/2022/04/19/Jstack%E5%88%86%E6%9E%90%E7%A5%9E%E5%99%A8/" rel="prev" title="Jstack分析神器">
+                  <i class="fa fa-chevron-left"></i> Jstack分析神器
+                </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/" rel="next" title="站在使用角度看缓存">
-                  站在使用角度看缓存 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
