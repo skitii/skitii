@@ -27,28 +27,37 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"skitii.vercel.app","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.10.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
 
-  <meta name="description" content="慢查询分析思路">
+  <meta name="description" content="Spring循环依赖竟然还有坑">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Mysql慢查询分析">
-<meta property="og:url" content="https://skitii.vercel.app/2022/02/12/Mysql%E6%85%A2%E6%9F%A5%E8%AF%A2%E5%88%86%E6%9E%90/index.html">
+<meta property="og:title" content="Spring真的完全解决了循环依赖吗">
+<meta property="og:url" content="https://skitii.vercel.app/2022/06/20/Spring%E7%9C%9F%E7%9A%84%E5%AE%8C%E5%85%A8%E8%A7%A3%E5%86%B3%E4%BA%86%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E5%90%97/index.html">
 <meta property="og:site_name" content="Skitii">
-<meta property="og:description" content="慢查询分析思路">
+<meta property="og:description" content="Spring循环依赖竟然还有坑">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-02-12T01:53:49.000Z">
-<meta property="article:modified_time" content="2022-06-20T09:51:01.873Z">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1655356733646-073b8a94-2149-4b23-aee0-cf52bfee4f33.png#clientId=uf5832294-d1ff-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=164&id=u0978593f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=328&originWidth=2658&originalType=binary&ratio=1&rotation=0&showTitle=false&size=137850&status=done&style=none&taskId=u4686c31e-51cd-42b0-9b7d-583fcc47d30&title=&width=1329">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1655356770032-1a67d61a-25c2-4ee5-b3cd-5fe4f5762d7f.png#clientId=uf5832294-d1ff-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=355&id=u3199fdc2&margin=%5Bobject%20Object%5D&name=image.png&originHeight=710&originWidth=1104&originalType=binary&ratio=1&rotation=0&showTitle=false&size=129014&status=done&style=none&taskId=ua38aa6b4-a57f-423f-8028-8ea5d08c7a4&title=&width=552">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1655356803893-522894d9-b177-40df-99b5-5c09844d356d.png#clientId=uf5832294-d1ff-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=168&id=uabdf2325&margin=%5Bobject%20Object%5D&name=image.png&originHeight=336&originWidth=1070&originalType=binary&ratio=1&rotation=0&showTitle=false&size=65515&status=done&style=none&taskId=u239d0500-9b89-4159-aeef-27b06a3c65d&title=&width=535">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/jpeg/21760570/1655717886881-61b7e403-bc8f-4ba0-9d6e-4a2c05a15e83.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1655690682070-19445d07-de7e-46f7-aca9-7d31680bf5dd.png#clientId=uf5832294-d1ff-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=255&id=u20f89496&margin=%5Bobject%20Object%5D&name=image.png&originHeight=255&originWidth=1757&originalType=binary&ratio=1&rotation=0&showTitle=false&size=97476&status=done&style=none&taskId=ufc72dc1b-7b37-4199-bbd9-069507b32a0&title=&width=1757">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1655704728621-34a05b4a-b350-4f36-bf31-2230501ba70b.png#clientId=uf5832294-d1ff-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=654&id=u1ff9b18e&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1308&originWidth=2778&originalType=binary&ratio=1&rotation=0&showTitle=false&size=432468&status=done&style=none&taskId=u5507bbe9-324b-4f22-9c64-0d274080290&title=&width=1389">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1655704836889-f9fdc2a7-d41d-45d7-a87b-d714f27436d0.png#clientId=uf5832294-d1ff-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=673&id=u95c9f560&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1346&originWidth=2718&originalType=binary&ratio=1&rotation=0&showTitle=false&size=476852&status=done&style=none&taskId=ua786477a-e213-4b7a-a13f-b282049c757&title=&width=1359">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1655714772658-7318e28a-cb36-47ae-87d8-b979b3678d6d.png#clientId=uf5832294-d1ff-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=266&id=u81ab7db7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=266&originWidth=543&originalType=binary&ratio=1&rotation=0&showTitle=false&size=30652&status=done&style=none&taskId=u658bc219-d0e1-4412-bed3-0f6e6e80cb6&title=&width=543">
+<meta property="article:published_time" content="2022-06-20T09:51:15.000Z">
+<meta property="article:modified_time" content="2022-06-20T09:53:03.765Z">
 <meta property="article:author" content="Skitii">
-<meta property="article:tag" content="Mysql">
+<meta property="article:tag" content="Spring">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1655356733646-073b8a94-2149-4b23-aee0-cf52bfee4f33.png#clientId=uf5832294-d1ff-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=164&id=u0978593f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=328&originWidth=2658&originalType=binary&ratio=1&rotation=0&showTitle=false&size=137850&status=done&style=none&taskId=u4686c31e-51cd-42b0-9b7d-583fcc47d30&title=&width=1329">
 
 
-<link rel="canonical" href="https://skitii.vercel.app/2022/02/12/Mysql%E6%85%A2%E6%9F%A5%E8%AF%A2%E5%88%86%E6%9E%90/">
+<link rel="canonical" href="https://skitii.vercel.app/2022/06/20/Spring%E7%9C%9F%E7%9A%84%E5%AE%8C%E5%85%A8%E8%A7%A3%E5%86%B3%E4%BA%86%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E5%90%97/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://skitii.vercel.app/2022/02/12/Mysql%E6%85%A2%E6%9F%A5%E8%AF%A2%E5%88%86%E6%9E%90/","path":"2022/02/12/Mysql慢查询分析/","title":"Mysql慢查询分析"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://skitii.vercel.app/2022/06/20/Spring%E7%9C%9F%E7%9A%84%E5%AE%8C%E5%85%A8%E8%A7%A3%E5%86%B3%E4%BA%86%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E5%90%97/","path":"2022/06/20/Spring真的完全解决了循环依赖吗/","title":"Spring真的完全解决了循环依赖吗"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Mysql慢查询分析 | Skitii</title>
+<title>Spring真的完全解决了循环依赖吗 | Skitii</title>
   
 
 
@@ -133,7 +142,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8Emybatis%E6%97%A5%E5%BF%97%E4%B8%AD%E8%8E%B7%E5%8F%96sql%E8%AF%AD%E5%8F%A5%EF%BC%8C%E9%80%9A%E8%BF%87explain%E8%BF%9B%E8%A1%8C%E5%88%86%E6%9E%90%E3%80%82"><span class="nav-number">1.</span> <span class="nav-text">从mybatis日志中获取sql语句，通过explain进行分析。</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#explain-type%E5%90%AB%E4%B9%89"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">explain type含义</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E6%85%A2%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">通过慢查询日志分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%95%B0%E6%8D%AE%E5%BA%93%E6%98%AF%E5%90%A6%E5%BC%80%E5%90%AF%E6%85%A2%E6%9F%A5%E8%AF%A2%EF%BC%8C%E4%BB%A5%E5%8F%8A%E6%85%A2%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97%E5%AD%98%E6%94%BE%E4%BD%8D%E7%BD%AE%E3%80%82"><span class="nav-number">2.0.1.</span> <span class="nav-text">查看数据库是否开启慢查询，以及慢查询日志存放位置。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%90%AF%E6%85%A2%E6%9F%A5%E8%AF%A2"><span class="nav-number">2.0.2.</span> <span class="nav-text">开启慢查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E6%85%A2%E6%9F%A5%E8%AF%A2%E6%97%B6%E9%97%B4%EF%BC%8C%E9%BB%98%E8%AE%A4%E6%98%AF10s%EF%BC%8C%E4%BD%86%E6%98%AF%E6%B5%8B%E8%AF%95%E6%8E%A8%E8%8D%90%E8%AE%BE%E7%BD%AE0%E3%80%82%E5%9B%A0%E4%B8%BA%E4%BB%A3%E4%BB%B7%E4%B8%8D%E9%AB%98%EF%BC%8C%E7%84%B6%E5%90%8E%E6%96%B9%E4%BE%BF%E5%88%86%E6%9E%90%E3%80%82"><span class="nav-number">2.0.3.</span> <span class="nav-text">查询慢查询时间，默认是10s，但是测试推荐设置0。因为代价不高，然后方便分析。</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%85%A2%E6%9F%A5%E8%AF%A2%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7"><span class="nav-number">3.</span> <span class="nav-text">慢查询分析工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mysqldumpslow-%EF%BC%88mysql%E8%87%AA%E5%B8%A6%EF%BC%89"><span class="nav-number">3.0.1.</span> <span class="nav-text">mysqldumpslow （mysql自带）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pt-query-digest-%EF%BC%88percona-toolkit%E4%B8%AD%E7%9A%84%E4%BA%A7%E5%93%81%EF%BC%89"><span class="nav-number">3.0.2.</span> <span class="nav-text">pt-query-digest （percona-toolkit中的产品）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%9A%E8%BF%87profilling%E6%9D%A5%E8%BF%BD%E8%B8%AA%E5%85%B7%E4%BD%93%E7%9A%84%E6%9F%A5%E8%AF%A2%E5%BC%80%E9%94%80"><span class="nav-number">4.</span> <span class="nav-text">通过profilling来追踪具体的查询开销</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%85%A2"><span class="nav-number">5.</span> <span class="nav-text">为什么会慢</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8E%B0%E8%B1%A1"><span class="nav-number">1.</span> <span class="nav-text">现象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5"><span class="nav-number">2.</span> <span class="nav-text">问题排查</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%92%E6%9F%A5%E6%80%9D%E8%B7%AF"><span class="nav-number">2.0.1.</span> <span class="nav-text">排查思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">2.0.2.</span> <span class="nav-text">源码分析</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3"><span class="nav-number">3.</span> <span class="nav-text">解决</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E5%A4%84%E7%90%86%E5%A4%B1%E6%95%88%E7%9A%84%E5%9C%BA%E6%99%AF"><span class="nav-number">4.0.0.1.</span> <span class="nav-text">循环依赖处理失效的场景</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -210,7 +219,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://skitii.vercel.app/2022/02/12/Mysql%E6%85%A2%E6%9F%A5%E8%AF%A2%E5%88%86%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="https://skitii.vercel.app/2022/06/20/Spring%E7%9C%9F%E7%9A%84%E5%AE%8C%E5%85%A8%E8%A7%A3%E5%86%B3%E4%BA%86%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E5%90%97/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpeg">
@@ -223,7 +232,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Mysql慢查询分析
+          Spring真的完全解决了循环依赖吗
         </h1>
 
         <div class="post-meta-container">
@@ -233,15 +242,9 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2022-02-12 09:53:49" itemprop="dateCreated datePublished" datetime="2022-02-12T09:53:49+08:00">2022-02-12</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-06-20 17:51:01" itemprop="dateModified" datetime="2022-06-20T17:51:01+08:00">2022-06-20</time>
+      <time title="创建时间：2022-06-20 17:51:15 / 修改时间：17:53:03" itemprop="dateCreated datePublished" datetime="2022-06-20T17:51:15+08:00">2022-06-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -249,7 +252,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+          <a href="/categories/Spring/" itemprop="url" rel="index"><span itemprop="name">Spring</span></a>
         </span>
     </span>
 
@@ -267,7 +270,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.6k</span>
+      <span>1.2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -278,7 +281,7 @@
     </span>
 </div>
 
-            <div class="post-description">慢查询分析思路</div>
+            <div class="post-description">Spring循环依赖竟然还有坑</div>
         </div>
       </header>
 
@@ -289,32 +292,28 @@
         <meta name="referrer" content="no-referrer" />
 <span id="more"></span>
 
-<h1 id="从mybatis日志中获取sql语句，通过explain进行分析。"><a href="#从mybatis日志中获取sql语句，通过explain进行分析。" class="headerlink" title="从mybatis日志中获取sql语句，通过explain进行分析。"></a>从mybatis日志中获取sql语句，通过explain进行分析。</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -E <span class="string">&#x27;==&gt;  Preparing:&#x27;</span> bytello.log | sed <span class="string">&#x27;s/.*==&gt;  Preparing:/explain/&#x27;</span> | sed <span class="string">&#x27;s/\($\)/;/&#x27;</span> | sed <span class="string">&#x27;s/\?/&quot;&quot;/g&#x27;</span> | sed <span class="string">&#x27;s/LIMIT &quot;&quot;/LIMIT 5/&#x27;</span> | <span class="built_in">sort</span> -u | <span class="built_in">uniq</span> &gt; test.txt</span><br></pre></td></tr></table></figure>
-<p>稍微解释一下，怕以后忘了。<br>grep -E ‘&#x3D;&#x3D;&gt;  Preparing:’ bytello.log 是通过正则匹配包含’&#x3D;&#x3D;&gt;  Preparing:’的行。<br>然后通过管道将每一行的结果输出到下一个命令。<br> sed ‘s&#x2F;.<em>&#x3D;&#x3D;&gt;  Preparing:&#x2F;explain&#x2F;‘ 是将.</em>&#x3D;&#x3D;&gt;  Preparing替换成expalin。（熟悉一下sed的语法就行）<br>后面的sed含义类似。<br>sort -u | uniq 是去除重复行。<br>最后输出到test.txt</p>
-<hr>
-<h4 id="explain-type含义"><a href="#explain-type含义" class="headerlink" title="explain type含义"></a>explain type含义</h4><ul>
-<li>system：系统表，少量数据，往往不需要进行磁盘IO</li>
-<li>const：常量连接</li>
-<li>eq_ref：主键索引(primary key)或者非空唯一索引(unique not null)等值扫描</li>
-<li>ref：非主键非唯一索引等值扫描</li>
-<li>range：范围扫描</li>
-<li>index：索引树扫描</li>
-<li>ALL：全表扫描(full table scan)</li>
-</ul>
-<hr>
-<p>explain确实可以分析，但是sql太多了，难道一行一行看嘛。我们可是程序员。不能干这种事吧。<br>应该会有一些工具帮助我们做这些事的。</p>
-<h1 id="通过慢查询日志分析"><a href="#通过慢查询日志分析" class="headerlink" title="通过慢查询日志分析"></a>通过慢查询日志分析</h1><h3 id="查看数据库是否开启慢查询，以及慢查询日志存放位置。"><a href="#查看数据库是否开启慢查询，以及慢查询日志存放位置。" class="headerlink" title="查看数据库是否开启慢查询，以及慢查询日志存放位置。"></a>查看数据库是否开启慢查询，以及慢查询日志存放位置。</h3><p>show variables like ‘%slow_query_log%’;</p>
-<ul>
-<li>slow_query_log &#x2F;&#x2F;是否开启，默认关闭，建议调优时才开启</li>
-<li>slow_query_log_file &#x2F;&#x2F;慢查询日志存放目录<h3 id="开启慢查询"><a href="#开启慢查询" class="headerlink" title="开启慢查询"></a>开启慢查询</h3></li>
-</ul>
-<p><strong>set global</strong> slow_query_log &#x3D; <strong>on</strong>;</p>
-<h3 id="查询慢查询时间，默认是10s，但是测试推荐设置0。因为代价不高，然后方便分析。"><a href="#查询慢查询时间，默认是10s，但是测试推荐设置0。因为代价不高，然后方便分析。" class="headerlink" title="查询慢查询时间，默认是10s，但是测试推荐设置0。因为代价不高，然后方便分析。"></a>查询慢查询时间，默认是10s，但是测试推荐设置0。因为代价不高，然后方便分析。</h3><p>**show **variables **like **’%long_query_time%’;</p>
-<p><strong>慢查询测试</strong><br><strong>select sleep</strong>(11);</p>
-<h1 id="慢查询分析工具"><a href="#慢查询分析工具" class="headerlink" title="慢查询分析工具"></a>慢查询分析工具</h1><h3 id="mysqldumpslow-（mysql自带）"><a href="#mysqldumpslow-（mysql自带）" class="headerlink" title="mysqldumpslow （mysql自带）"></a>mysqldumpslow （mysql自带）</h3><p>常用命令</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">得到返回记录集最多的10条SQL：</span><br><span class="line">mysqldumpslow -s r -t  10 /var/lib/mysql/mysql-slow.log</span><br><span class="line">得到访问次数最多的10条SQL：</span><br><span class="line">mysqldumpslow -s r -t  10 /var/lib/mysql/mysql-slow.log</span><br><span class="line"></span><br><span class="line">得到按照时间排序的前10条里面含有左连接的SQL：</span><br><span class="line">mysqldumpslow -s t -t 10 -g <span class="string">&quot;left join&quot;</span> /var/lib/mysql/mysql-slow.log</span><br><span class="line">也支持管道符命令</span><br><span class="line">mysqldumpslow -s t -t 10 -g <span class="string">&quot;left join&quot;</span> /var/lib/mysql/mysql-slow.log | more //分页显示</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h3 id="pt-query-digest-（percona-toolkit中的产品）"><a href="#pt-query-digest-（percona-toolkit中的产品）" class="headerlink" title="pt-query-digest （percona-toolkit中的产品）"></a>pt-query-digest （percona-toolkit中的产品）</h3><h1 id="通过profilling来追踪具体的查询开销"><a href="#通过profilling来追踪具体的查询开销" class="headerlink" title="通过profilling来追踪具体的查询开销"></a>通过profilling来追踪具体的查询开销</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">查看profiling的开启状态。默认关闭。</span><br><span class="line">show variables like <span class="string">&#x27;profiling&#x27;</span>;</span><br><span class="line">开启profiling</span><br><span class="line"><span class="built_in">set</span> profiling = <span class="string">&#x27;ON&#x27;</span>;</span><br><span class="line">查询具体的查询开销</span><br><span class="line">show profile;</span><br></pre></td></tr></table></figure>
-<h1 id="为什么会慢"><a href="#为什么会慢" class="headerlink" title="为什么会慢"></a>为什么会慢</h1><p>可以通过mysql-slow.log来查看sql具体的执行情况【记得开启slowlog】</p>
+<p>感觉好久没写过博客了，刚好最近遇到一个还挺有意思的问题，就记录一下吧。</p>
+<h1 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h1><p><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1655356733646-073b8a94-2149-4b23-aee0-cf52bfee4f33.png#clientId=uf5832294-d1ff-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=164&id=u0978593f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=328&originWidth=2658&originalType=binary&ratio=1&rotation=0&showTitle=false&size=137850&status=done&style=none&taskId=u4686c31e-51cd-42b0-9b7d-583fcc47d30&title=&width=1329" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1655356770032-1a67d61a-25c2-4ee5-b3cd-5fe4f5762d7f.png#clientId=uf5832294-d1ff-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=355&id=u3199fdc2&margin=%5Bobject%20Object%5D&name=image.png&originHeight=710&originWidth=1104&originalType=binary&ratio=1&rotation=0&showTitle=false&size=129014&status=done&style=none&taskId=ua38aa6b4-a57f-423f-8028-8ea5d08c7a4&title=&width=552" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1655356803893-522894d9-b177-40df-99b5-5c09844d356d.png#clientId=uf5832294-d1ff-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=168&id=uabdf2325&margin=%5Bobject%20Object%5D&name=image.png&originHeight=336&originWidth=1070&originalType=binary&ratio=1&rotation=0&showTitle=false&size=65515&status=done&style=none&taskId=u239d0500-9b89-4159-aeef-27b06a3c65d&title=&width=535" alt="image.png"></p>
+<p>??? Spring不是通过三级缓存解决了循环依赖问题吗？<br>这不就是A依赖B，然后B依赖A吗？怎么也报循环依赖啊。</p>
+<h1 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h1><h3 id="排查思路"><a href="#排查思路" class="headerlink" title="排查思路"></a>排查思路</h3><ol>
+<li>难道这个版本的Spring没解决？写个Demo验证一下（简单写个TestService1和TestService2相互依赖就行）。启动很成功啊。【不过这里还有一个比较好玩的现象，就是在TestService1的方法上加上@Async注解，就会报循环依赖了，这个google上有很多答案，其实就是TestService1被代理了，引用变了，然后TestService2还保留的是原始的引用】</li>
+<li>把相关依赖去掉试试（把ConnectServiceImpl和UserServiceImpl中的其他依赖去掉试试看了），还是报错循环依赖。<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3>what’s the hell? 只能捋捋源码了。<br>看看Spring解决循环依赖的过程<br><img src="https://cdn.nlark.com/yuque/0/2022/jpeg/21760570/1655717886881-61b7e403-bc8f-4ba0-9d6e-4a2c05a15e83.jpeg"></li>
+</ol>
+<p>当我发现初始化前后，这个ConnectService的引用不一样时，赶紧问题就已经浮出水面了。这个情况应该跟@Async的情况是一样的，就是UserService中注入了ConnectService的引用，然后后续ConnectService初始化的时候，被包装了，引用变了，然后ConnectService初始化会判断新的引用和旧的是否相同，如果不相同，会去找ConnectService实际上依赖的bean(userService)是否创建了，如果创建了就添加到依赖列表中，如果依赖列表不为空，就报错循环依赖。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1655690682070-19445d07-de7e-46f7-aca9-7d31680bf5dd.png#clientId=uf5832294-d1ff-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=255&id=u20f89496&margin=%5Bobject%20Object%5D&name=image.png&originHeight=255&originWidth=1757&originalType=binary&ratio=1&rotation=0&showTitle=false&size=97476&status=done&style=none&taskId=ufc72dc1b-7b37-4199-bbd9-069507b32a0&title=&width=1757" alt="image.png"><br><strong>那么问题来了</strong>，实例化的时候包装了ConnectService，引用变成新的了，但是正常来讲，不应该包装啊。 Test1和Test2相互引用也没有被包装啊。<br>那就来看看源码吧<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1655704728621-34a05b4a-b350-4f36-bf31-2230501ba70b.png#clientId=uf5832294-d1ff-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=654&id=u1ff9b18e&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1308&originWidth=2778&originalType=binary&ratio=1&rotation=0&showTitle=false&size=432468&status=done&style=none&taskId=u5507bbe9-324b-4f22-9c64-0d274080290&title=&width=1389" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1655704836889-f9fdc2a7-d41d-45d7-a87b-d714f27436d0.png#clientId=uf5832294-d1ff-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=673&id=u95c9f560&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1346&originWidth=2718&originalType=binary&ratio=1&rotation=0&showTitle=false&size=476852&status=done&style=none&taskId=ua786477a-e213-4b7a-a13f-b282049c757&title=&width=1359" alt="image.png"></p>
+<p>可以看到，在初始化这个ConnectService类的时候，会调用一个applyBeanPostProcessorsAfterInitialization方法，这个方法的会应用所有的beanPostProcessor，其中有一个方法参数校验的beanPostProcessor会代理这个类。所以导致引用变了。<br>那罪魁祸首就出来了呀，就是这个MethodValidationPostProcessor会代理这个bean，然后修改引用。那为啥会被这个MethodValidationPostProcessor代理呢。当然是这个AOP啦。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1655714772658-7318e28a-cb36-47ae-87d8-b979b3678d6d.png#clientId=uf5832294-d1ff-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=266&id=u81ab7db7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=266&originWidth=543&originalType=binary&ratio=1&rotation=0&showTitle=false&size=30652&status=done&style=none&taskId=u658bc219-d0e1-4412-bed3-0f6e6e80cb6&title=&width=543" alt="image.png"></p>
+<h1 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h1><p>两种方案</p>
+<ol>
+<li>去除@Validated校验。</li>
+<li>注入UserService时加上@Lazy注解</li>
+</ol>
+<p>方案一得加好多校验代码，选择方案二吧。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><h4 id="循环依赖处理失效的场景"><a href="#循环依赖处理失效的场景" class="headerlink" title="循环依赖处理失效的场景"></a>循环依赖处理失效的场景</h4><ol>
+<li><strong>初始化过程生成了新的代理对象</strong>（一般应该是初始化过程中使用了一些前后置处理器）</li>
+<li>使用@DependOn产生循环依赖 </li>
+<li>非单例产生循环依赖</li>
+</ol>
+<p>虽然2，3在本案例中并没有提到，但是应该也是可以明白的</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/344624139">https://zhuanlan.zhihu.com/p/344624139</a> （三级缓存分析的还比较清晰）</p>
 
     </div>
 
@@ -324,21 +323,18 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2022/02/10/OrderBy%E8%B8%A9%E5%9D%91%E4%B9%8B%E8%B7%AF/" rel="prev" title="OrderBy踩坑之路">
-                  <i class="fa fa-chevron-left"></i> OrderBy踩坑之路
+                <a href="/2022/04/27/Redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" rel="prev" title="Redis分布式锁">
+                  <i class="fa fa-chevron-left"></i> Redis分布式锁
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2022/02/13/Java%E8%BF%9E%E6%8E%A5Mysql%E5%AD%97%E7%AC%A6%E9%9B%86%E8%AE%BE%E7%BD%AE%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/" rel="next" title="Java连接Mysql字符集设置过程详解">
-                  Java连接Mysql字符集设置过程详解 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
