@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+
+<meta name="baidu-site-verification" content="code-AhZIkdDG9J" />
+<meta name="google-site-verification" content="PeC9Clz1swOOWEProA3d9p39srZKONgJreLma19x0Cc" />
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="PeC9Clz1swOOWEProA3d9p39srZKONgJreLma19x0Cc">
+  <meta name="baidu-site-verification" content="code-AhZIkdDG9J">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/purple/pace-theme-flash.css">
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"skitii.vercel.app","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.10.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+  <meta name="description" content="缓存也是有套路的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="站在使用角度看缓存">
+<meta property="og:url" content="https://skitii.vercel.app/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/index.html">
+<meta property="og:site_name" content="Skitii">
+<meta property="og:description" content="缓存也是有套路的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__puml/7b520a9451b29c16d478db6a7d1a5b7c.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcblxuYXV0b251bWJlclxuXG5wYXJ0aWNpcGFudCBcIldlYlNlcnZlclwiIGFzIFdlYlNlcnZlclxucGFydGljaXBhbnQgXCJDYWNoZVwiIGFzIENhY2hlICNkYXJrY3lhblxucGFydGljaXBhbnQgXCJEQlwiIGFzIERCICNvcmFuZ2Vcbj09IOafpeivoiA9PVxuV2ViU2VydmVyIC0-IENhY2hlOiDmn6Xor6LmlbDmja5cblx0Z3JvdXAg57yT5a2Y5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5Zue57yT5a2Y5pWw5o2uXG5cdGVsc2Ug57yT5a2Y5LiN5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5ZuebnVsbFxuXHRcdFdlYlNlcnZlciAtPiBEQjog5p-l6K-i5pWw5o2uXG5cdFx0REIgLS0-IFdlYlNlcnZlcjog6L-U5Zue5pWw5o2uXG5cdFx0V2ViU2VydmVyIC0-IENhY2hlOiDorr7nva7mlbDmja5cblx0ZW5kXG49PSDmm7TmlrDmlbDmja4gPT1cbldlYlNlcnZlciAtPiBEQjog5pu05paw5pWw5o2uXG5EQiAtLT4gV2ViU2VydmVyOiDov5Tlm57mm7TmlrDnu5PmnpxcbldlYlNlcnZlciAtPiBDYWNoZTog5aSx5pWI57yT5a2YXG5AZW5kdW1sIiwidXJsIjoiaHR0cHM6Ly9jZG4ubmxhcmsuY29tL3l1cXVlL19fcHVtbC83YjUyMGE5NDUxYjI5YzE2ZDQ3OGRiNmE3ZDFhNWI3Yy5zdmciLCJpZCI6ImRHRFVLIiwibWFyZ2luIjp7InRvcCI6dHJ1ZSwiYm90dG9tIjp0cnVlfSwiY2FyZCI6ImRpYWdyYW0ifQ==">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/21760570/1635123541336-143553c3-54a4-4b06-9fa5-12f5c0d8ed6e.png#clientId=u0e5344b7-79aa-4&from=paste&height=494&id=u840b8fcb&margin=%5Bobject%20Object%5D&name=image.png&originHeight=494&originWidth=399&originalType=binary&ratio=1&size=53418&status=done&style=none&taskId=ud9f2bafd-41ac-42c9-ae68-01468166e6a&width=399">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__puml/cf1b0a5e748083fd8c369bd0024fba64.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcbnRpdGxlIEZhY2Vib29rIExlYXNl6K6-6K6hXG5hdXRvbnVtYmVyXG5cbnBhcnRpY2lwYW50IFwiV2ViU2VydmVyXCIgYXMgV2ViU2VydmVyXG5wYXJ0aWNpcGFudCBcIkNhY2hlXCIgYXMgQ2FjaGUgI2RhcmtjeWFuXG5wYXJ0aWNpcGFudCBcIkRCXCIgYXMgREIgI29yYW5nZVxuPT0g5p-l6K-iID09XG5XZWJTZXJ2ZXIgLT4gQ2FjaGU6IOafpeivouaVsOaNrlxuXHRncm91cCDnvJPlrZjlkb3kuK1cblx0XHRDYWNoZSAtLT4gV2ViU2VydmVyOiDov5Tlm57nvJPlrZjmlbDmja5cblx0ZWxzZSDnvJPlrZjkuI3lkb3kuK1cblx0XHRncm91cCBjYWNoZeS4reS4jeWtmOWcqGxlYXNlXG5cdFx0XHRDYWNoZSAtLT4gV2ViU2VydmVyOiDov5Tlm55udWxs5oiW6ICF6L-H5pyf5YC877yI5qC55o2u6YWN572u77yJXG5cdFx0XHRXZWJTZXJ2ZXIgLT4gV2ViU2VydmVyOiDnrYnkuIDmrrXml7bpl7Rcblx0XHRcdFdlYlNlcnZlciAtPiBDYWNoZTog5p-l6K-i5pWw5o2uXG5cdFx0XHRDYWNoZSAtLT4gV2ViU2VydmVyOiDov5Tlm57nvJPlrZjmlbDmja5cblx0XHRlbHNlIGNhY2hl5Lit5a2Y5ZyobGVhc2Vcblx0XHRcdENhY2hlIC0tPiBXZWJTZXJ2ZXI6IOi_lOWbnm51bGws5bim5pyJbGVhc2XmoIfor4Zcblx0XHRcdFdlYlNlcnZlciAtPiBEQjog5p-l6K-i5pWw5o2uXG5cdFx0XHREQiAtLT4gV2ViU2VydmVyOiDov5Tlm57mlbDmja5cblx0XHRcdFdlYlNlcnZlciAtPiBDYWNoZTogbGVhc2XmsqHmnInov4fmnJ_vvIzmiY3orr7nva7mlbDmja5cblx0XHRlbmRcblx0ZW5kXG49PSDmm7TmlrDmlbDmja4gPT1cbldlYlNlcnZlciAtPiBEQjog5pu05paw5pWw5o2uXG5EQiAtLT4gV2ViU2VydmVyOiDov5Tlm57mm7TmlrDnu5PmnpxcbldlYlNlcnZlciAtPiBDYWNoZTog5aSx5pWI57yT5a2YXG5DYWNoZSAtPiBDYWNoZSA6IOabtOaWsGxlYXNlXG5AZW5kdW1sIiwidXJsIjoiaHR0cHM6Ly9jZG4ubmxhcmsuY29tL3l1cXVlL19fcHVtbC9jZjFiMGE1ZTc0ODA4M2ZkOGMzNjliZDAwMjRmYmE2NC5zdmciLCJpZCI6Im5CcU9SIiwibWFyZ2luIjp7InRvcCI6dHJ1ZSwiYm90dG9tIjp0cnVlfSwiY2FyZCI6ImRpYWdyYW0ifQ==">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__puml/8e3c4decea0b2feed13b21312e2b2f28.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcbnRpdGxlIOaVsOaNruW6k-afpeivouWKoOmUgVxuYXV0b251bWJlclxuXG5wYXJ0aWNpcGFudCBcIldlYlNlcnZlclwiIGFzIFdlYlNlcnZlclxucGFydGljaXBhbnQgXCJDYWNoZVwiIGFzIENhY2hlICNkYXJrY3lhblxucGFydGljaXBhbnQgXCJEQlwiIGFzIERCICNvcmFuZ2Vcbj09IOafpeivoiA9PVxuV2ViU2VydmVyIC0-IENhY2hlOiDmn6Xor6LmlbDmja5cblx0Z3JvdXAg57yT5a2Y5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5Zue57yT5a2Y5pWw5o2uXG5cdGVsc2Ug57yT5a2Y5LiN5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5ZuebnVsbFxuXHRcdFdlYlNlcnZlciAtPiBXZWJTZXJ2ZXIgOiDojrflj5bliIbluIPlvI_plIFcblx0XHRncm91cCDojrflj5bmiJDlip9cblx0XHRcdFdlYlNlcnZlciAtPiBDYWNoZSA6IOiuvue9rmxlYXNlX2tleToxXG5cdFx0XHRXZWJTZXJ2ZXIgLT4gREI6IOafpeivouaVsOaNrlxuXHRcdFx0REIgLS0-IFdlYlNlcnZlcjog6L-U5Zue5pWw5o2uXG5cdFx0XHRncm91cCBsZWFzZV9rZXnlrZjlnKhcblx0XHRcdFx0V2ViU2VydmVyIC0-IENhY2hlOiDorr7nva7mlbDmja5cblx0XHRcdGVuZFxuXHRcdFx0V2ViU2VydmVyIC0-IFdlYlNlcnZlciA6IOmHiuaUvuWIhuW4g-W8j-mUgVxuXHRcdGVsc2Ug6I635Y-W5aSx6LSlXG5cdFx0XHRXZWJTZXJ2ZXIgLT4gV2ViU2VydmVyIDog562J5b6F5LiA5bCP5q615pe26Ze0XG5cdFx0XHRXZWJTZXJ2ZXIgLT4gQ2FjaGU6IOafpeivoue8k-WtmOaVsOaNrlxuXHRcdFx0bm90ZSByaWdodFxuXHRcdFx05Li65LuA5LmI6KaB562J5LiA5q615pe26Ze05YaN5Y675p-l6K-i57yT5a2Y77yM6ICM5LiN5piv562J6ZSB5ZGi77yfXG5cdFx0XHTmiYDmnInnmoTlubblj5Hpg73lnKjnrYnplIHvvIzpnIDopoHkuIDkuKrkuKrmiafooYzjgIJcblx0XHRcdGVuZCBub3RlXG5cdFx0XHRDYWNoZSAtLT4gV2ViU2VydmVyOiDov5Tlm57nvJPlrZjmlbDmja5cblx0ZW5kXG49PSDmm7TmlrDmlbDmja4gPT1cbldlYlNlcnZlciAtPiBEQjog5pu05paw5pWw5o2uXG5EQiAtLT4gV2ViU2VydmVyOiDov5Tlm57mm7TmlrDnu5PmnpxcbldlYlNlcnZlciAtPiBDYWNoZTog5aSx5pWI57yT5a2YXG5XZWJTZXJ2ZXIgLT4gQ2FjaGU6IOWIoOmZpGxlYXNlX2tleVxuQGVuZHVtbCIsInVybCI6Imh0dHBzOi8vY2RuLm5sYXJrLmNvbS95dXF1ZS9fX3B1bWwvOGUzYzRkZWNlYTBiMmZlZWQxM2IyMTMxMmUyYjJmMjguc3ZnIiwiaWQiOiJmYm1WdyIsIm1hcmdpbiI6eyJ0b3AiOnRydWUsImJvdHRvbSI6dHJ1ZX0sImNhcmQiOiJkaWFncmFtIn0=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__puml/a0ed468999d29a3a2f0c91e2e9f3e647.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcbnNraW5wYXJhbSBQYXJ0aWNpcGFudFBhZGRpbmcgMjBcbmF1dG9udW1iZXJcblxucGFydGljaXBhbnQgXCJXZWJTZXJ2ZXJcIiBhcyBXZWJTZXJ2ZXJcbmJveCBjYWNoZSBzZXZpY2VcbnBhcnRpY2lwYW50IFwiQ2FjaGVcIiBhcyBDYWNoZSAjZGFya2N5YW5cbnBhcnRpY2lwYW50IFwiREJcIiBhcyBEQiAjb3JhbmdlXG5lbmQgYm94XG49PSDmn6Xor6IgPT1cbldlYlNlcnZlciAtPiBDYWNoZTog5p-l6K-i5pWw5o2uXG5cdGdyb3VwIOe8k-WtmOS4jeWRveS4rVxuXHRcdENhY2hlIC0-IERCOiDmn6Xor6LmlbDmja5cblx0XHREQiAtLT4gQ2FjaGU6IOi_lOWbnuaVsOaNrlxuXHRcdENhY2hlIC0-IENhY2hlOiDorr7nva7mlbDmja5cblx0ZW5kXG5DYWNoZSAtLT4gV2ViU2VydmVyOiDov5Tlm57nvJPlrZjmlbDmja5cbj09IOabtOaWsO-8iOW8guatpe-8iSA9PVxuV2ViU2VydmVyIC0-IENhY2hlOiDmm7TmlrDmlbDmja5cbkNhY2hlIC0-IENhY2hlOiDmm7TmlrDnvJPlrZhcbkNhY2hlIC0tPiBXZWJTZXJ2ZXI6IOi_lOWbnuabtOaWsOe7k-aenFxuZ3JvdXAg5byC5q2l5pu05pawZGJcblx0Q2FjaGUgLT4gREI6IOabtOaWsOaVsOaNrlxuXHREQiAtLT4gQ2FjaGU6IOi_lOWbnuabtOaWsOe7k-aenFxuZW5kXG5AZW5kdW1sIiwidXJsIjoiaHR0cHM6Ly9jZG4ubmxhcmsuY29tL3l1cXVlL19fcHVtbC9hMGVkNDY4OTk5ZDI5YTNhMmYwYzkxZTJlOWYzZTY0Ny5zdmciLCJpZCI6IkNrQ05LIiwibWFyZ2luIjp7InRvcCI6dHJ1ZSwiYm90dG9tIjp0cnVlfSwiY2FyZCI6ImRpYWdyYW0ifQ==">
+<meta property="article:published_time" content="2022-02-09T11:27:10.000Z">
+<meta property="article:modified_time" content="2022-07-27T02:51:59.874Z">
+<meta property="article:author" content="Skitii">
+<meta property="article:tag" content="Cache">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/__puml/7b520a9451b29c16d478db6a7d1a5b7c.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcblxuYXV0b251bWJlclxuXG5wYXJ0aWNpcGFudCBcIldlYlNlcnZlclwiIGFzIFdlYlNlcnZlclxucGFydGljaXBhbnQgXCJDYWNoZVwiIGFzIENhY2hlICNkYXJrY3lhblxucGFydGljaXBhbnQgXCJEQlwiIGFzIERCICNvcmFuZ2Vcbj09IOafpeivoiA9PVxuV2ViU2VydmVyIC0-IENhY2hlOiDmn6Xor6LmlbDmja5cblx0Z3JvdXAg57yT5a2Y5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5Zue57yT5a2Y5pWw5o2uXG5cdGVsc2Ug57yT5a2Y5LiN5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5ZuebnVsbFxuXHRcdFdlYlNlcnZlciAtPiBEQjog5p-l6K-i5pWw5o2uXG5cdFx0REIgLS0-IFdlYlNlcnZlcjog6L-U5Zue5pWw5o2uXG5cdFx0V2ViU2VydmVyIC0-IENhY2hlOiDorr7nva7mlbDmja5cblx0ZW5kXG49PSDmm7TmlrDmlbDmja4gPT1cbldlYlNlcnZlciAtPiBEQjog5pu05paw5pWw5o2uXG5EQiAtLT4gV2ViU2VydmVyOiDov5Tlm57mm7TmlrDnu5PmnpxcbldlYlNlcnZlciAtPiBDYWNoZTog5aSx5pWI57yT5a2YXG5AZW5kdW1sIiwidXJsIjoiaHR0cHM6Ly9jZG4ubmxhcmsuY29tL3l1cXVlL19fcHVtbC83YjUyMGE5NDUxYjI5YzE2ZDQ3OGRiNmE3ZDFhNWI3Yy5zdmciLCJpZCI6ImRHRFVLIiwibWFyZ2luIjp7InRvcCI6dHJ1ZSwiYm90dG9tIjp0cnVlfSwiY2FyZCI6ImRpYWdyYW0ifQ==">
+
+
+<link rel="canonical" href="https://skitii.vercel.app/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://skitii.vercel.app/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/","path":"2022/02/09/站在使用角度看缓存/","title":"站在使用角度看缓存"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>站在使用角度看缓存 | Skitii</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+
+  <!--pjax：防止跳转页面音乐暂停-->
+  <script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Skitii</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">A Lazy Guy.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+	
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%9A%E5%8A%A1%E9%9A%BE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">业务难题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-number">2.0.0.1.</span> <span class="nav-text">缓存优缺点</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E6%9B%B4%E6%96%B0%E6%8E%A2%E8%AE%A8"><span class="nav-number">3.</span> <span class="nav-text">缓存更新探讨</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Cache-Aside"><span class="nav-number">3.1.</span> <span class="nav-text">Cache Aside</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF-amp-%E8%84%8F%E6%95%B0%E6%8D%AE"><span class="nav-number">3.1.1.</span> <span class="nav-text">解决缓存击穿&amp;脏数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-number">3.1.2.</span> <span class="nav-text">解决缓存雪崩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="nav-number">3.1.3.</span> <span class="nav-text">解决缓存穿透</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E6%96%B9%E5%BC%8F"><span class="nav-number">3.1.4.</span> <span class="nav-text">其他方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Read-x2F-Write-Through"><span class="nav-number">3.2.</span> <span class="nav-text">Read&#x2F;Write Through</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%98%E5%9C%A8%E9%97%AE%E9%A2%98"><span class="nav-number">3.2.1.</span> <span class="nav-text">存在问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Write-Behind-Caching"><span class="nav-number">3.3.</span> <span class="nav-text">Write Behind Caching</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%98%E5%9C%A8%E9%97%AE%E9%A2%98-1"><span class="nav-number">3.3.1.</span> <span class="nav-text">存在问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Skitii"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Skitii</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="sidebar-button site-overview-item animated">
+    <button><i class="fa fa-comment"></i>
+      Contact
+    </button>
+  </div>
+
+
+
+        </div>
+      </div>
+
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=300 height=450 src="//music.163.com/outchain/player?type=0&id=7179117219&auto=1&height=430"></iframe>
+
+    </div>
+  
+  </aside>
+  
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://skitii.vercel.app/2022/02/09/%E7%AB%99%E5%9C%A8%E4%BD%BF%E7%94%A8%E8%A7%92%E5%BA%A6%E7%9C%8B%E7%BC%93%E5%AD%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Skitii">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Skitii">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          站在使用角度看缓存
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-02-09 19:27:10" itemprop="dateCreated datePublished" datetime="2022-02-09T19:27:10+08:00">2022-02-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-07-27 10:51:59" itemprop="dateModified" datetime="2022-07-27T10:51:59+08:00">2022-07-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Cache/" itemprop="url" rel="index"><span itemprop="name">Cache</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+            <div class="post-description">缓存也是有套路的</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <meta name="referrer" content="no-referrer" />
+
+<span id="more"></span>
+
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>缓存是一件很复杂的事情。我认为比较核心的知识应该是，</p>
+<ol>
+<li>缓存一致性保证</li>
+<li>缓存数据结构设计和缓存内存管理</li>
+<li>缓存中间件的建设（包含通信设计，故障处理，高可用保障等一系列知识）<br>本文主要从使用的角度去剖析缓存中的一些核心的内容。<br>在使用上，我把缓存比较核心的东西总结为，</li>
+</ol>
+<p><strong>一个业务难题</strong>，缓存使用场景<br><strong>一个核心问题</strong>，并发和异常的情况下，如何尽可能的保证数据的一致性。<br><strong>两个核心操作</strong>，查询，更新；</p>
+<h1 id="业务难题"><a href="#业务难题" class="headerlink" title="业务难题"></a>业务难题</h1><p>之前我们聊过一轮缓存相关的内容，我们之前一直纠结于要不要使用缓存，以及什么情况下该使用缓存。<br>这个业务难题，你很难去笼统的说，什么情况下该用缓存，什么情况下不该用缓存？<br>我觉得我们只能根据缓存带来的优点和可能出现的问题然后在结合我们的业务场景去考虑，我们究竟要不要使用缓存。</p>
+<h4 id="缓存优缺点"><a href="#缓存优缺点" class="headerlink" title="缓存优缺点"></a>缓存优缺点</h4><p>优点：</p>
+<ol>
+<li>快，提高响应速度和系统吞吐量</li>
+<li>减轻数据库压力</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>数据一致性问题</li>
+<li>增加系统的复杂性和维护成本</li>
+</ol>
+<p>建议使用缓存的场景，</p>
+<ol>
+<li>读多写少</li>
+<li>高频访问且耗时服务</li>
+</ol>
+<p>不管是哪种场景，一旦我们决定在业务中使用缓存，有一个问题是不可避免的，就是如何保证数据的一致性。<br>我甚至有一个偏执的想法，就是，如果你能cover住缓存的可能带来的问题。那其实只要能带来性能上的提升，我们可以大胆的使用缓存。</p>
+<h1 id="缓存更新探讨"><a href="#缓存更新探讨" class="headerlink" title="缓存更新探讨"></a>缓存更新探讨</h1><h2 id="Cache-Aside"><a href="#Cache-Aside" class="headerlink" title="Cache Aside"></a>Cache Aside</h2><p><img src="https://cdn.nlark.com/yuque/__puml/7b520a9451b29c16d478db6a7d1a5b7c.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcblxuYXV0b251bWJlclxuXG5wYXJ0aWNpcGFudCBcIldlYlNlcnZlclwiIGFzIFdlYlNlcnZlclxucGFydGljaXBhbnQgXCJDYWNoZVwiIGFzIENhY2hlICNkYXJrY3lhblxucGFydGljaXBhbnQgXCJEQlwiIGFzIERCICNvcmFuZ2Vcbj09IOafpeivoiA9PVxuV2ViU2VydmVyIC0-IENhY2hlOiDmn6Xor6LmlbDmja5cblx0Z3JvdXAg57yT5a2Y5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5Zue57yT5a2Y5pWw5o2uXG5cdGVsc2Ug57yT5a2Y5LiN5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5ZuebnVsbFxuXHRcdFdlYlNlcnZlciAtPiBEQjog5p-l6K-i5pWw5o2uXG5cdFx0REIgLS0-IFdlYlNlcnZlcjog6L-U5Zue5pWw5o2uXG5cdFx0V2ViU2VydmVyIC0-IENhY2hlOiDorr7nva7mlbDmja5cblx0ZW5kXG49PSDmm7TmlrDmlbDmja4gPT1cbldlYlNlcnZlciAtPiBEQjog5pu05paw5pWw5o2uXG5EQiAtLT4gV2ViU2VydmVyOiDov5Tlm57mm7TmlrDnu5PmnpxcbldlYlNlcnZlciAtPiBDYWNoZTog5aSx5pWI57yT5a2YXG5AZW5kdW1sIiwidXJsIjoiaHR0cHM6Ly9jZG4ubmxhcmsuY29tL3l1cXVlL19fcHVtbC83YjUyMGE5NDUxYjI5YzE2ZDQ3OGRiNmE3ZDFhNWI3Yy5zdmciLCJpZCI6ImRHRFVLIiwibWFyZ2luIjp7InRvcCI6dHJ1ZSwiYm90dG9tIjp0cnVlfSwiY2FyZCI6ImRpYWdyYW0ifQ==">### 存在问题<br>脏数据 : 读请求先读数据库，然后写请求更新数据库，然后失效缓存，最后读请求在更新缓存（出现概率很低，但是如果是多个节点，某个节点很慢，确实会出现这个场景，但是，一般来讲，不同节点请求的数据应该是不同的）【加锁；lease；延时双删】<br>缓存击穿 ： 写请求失效缓存后，大量读请求访问数据库。【加锁，获取不到锁的请求尝试等一下在访问数据库；facebook采用lease的方式处理】<br>异常情况：写数据库成功，删缓存失败；【异步确保；分布式事务保证】<br><img src="https://cdn.nlark.com/yuque/0/2021/png/21760570/1635123541336-143553c3-54a4-4b06-9fa5-12f5c0d8ed6e.png#clientId=u0e5344b7-79aa-4&from=paste&height=494&id=u840b8fcb&margin=%5Bobject%20Object%5D&name=image.png&originHeight=494&originWidth=399&originalType=binary&ratio=1&size=53418&status=done&style=none&taskId=ud9f2bafd-41ac-42c9-ae68-01468166e6a&width=399" alt="image.png"><br><em>缓存脏数据图解</em></p>
+<p>带着上面的问题，我们先来看看facebook的lease设计<br>lease设计主要解决两个问题：</p>
+<ol>
+<li>过期设置（Cache Aside的脏数据问题）</li>
+<li>大量频繁的读写请求，导致读总是查询数据库。</li>
+</ol>
+<p>但是它有自己的客户端和服务器。为了方便理解，我这里沿用了上诉Cache Aside图。<br>这里先说明一下lease生成规则，</p>
+<ol>
+<li>当缓存中的key失效时，生成一个lease; 然后每10s更新lease并清除返回标识。</li>
+<li>对于查询请求，缓存未命中时，将lease返回给客户端，然后清除该key的lease。</li>
+</ol>
+<p>于是针对每个过期key，都会对应一个lease:key-value的缓存。<br><img src="https://cdn.nlark.com/yuque/__puml/cf1b0a5e748083fd8c369bd0024fba64.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcbnRpdGxlIEZhY2Vib29rIExlYXNl6K6-6K6hXG5hdXRvbnVtYmVyXG5cbnBhcnRpY2lwYW50IFwiV2ViU2VydmVyXCIgYXMgV2ViU2VydmVyXG5wYXJ0aWNpcGFudCBcIkNhY2hlXCIgYXMgQ2FjaGUgI2RhcmtjeWFuXG5wYXJ0aWNpcGFudCBcIkRCXCIgYXMgREIgI29yYW5nZVxuPT0g5p-l6K-iID09XG5XZWJTZXJ2ZXIgLT4gQ2FjaGU6IOafpeivouaVsOaNrlxuXHRncm91cCDnvJPlrZjlkb3kuK1cblx0XHRDYWNoZSAtLT4gV2ViU2VydmVyOiDov5Tlm57nvJPlrZjmlbDmja5cblx0ZWxzZSDnvJPlrZjkuI3lkb3kuK1cblx0XHRncm91cCBjYWNoZeS4reS4jeWtmOWcqGxlYXNlXG5cdFx0XHRDYWNoZSAtLT4gV2ViU2VydmVyOiDov5Tlm55udWxs5oiW6ICF6L-H5pyf5YC877yI5qC55o2u6YWN572u77yJXG5cdFx0XHRXZWJTZXJ2ZXIgLT4gV2ViU2VydmVyOiDnrYnkuIDmrrXml7bpl7Rcblx0XHRcdFdlYlNlcnZlciAtPiBDYWNoZTog5p-l6K-i5pWw5o2uXG5cdFx0XHRDYWNoZSAtLT4gV2ViU2VydmVyOiDov5Tlm57nvJPlrZjmlbDmja5cblx0XHRlbHNlIGNhY2hl5Lit5a2Y5ZyobGVhc2Vcblx0XHRcdENhY2hlIC0tPiBXZWJTZXJ2ZXI6IOi_lOWbnm51bGws5bim5pyJbGVhc2XmoIfor4Zcblx0XHRcdFdlYlNlcnZlciAtPiBEQjog5p-l6K-i5pWw5o2uXG5cdFx0XHREQiAtLT4gV2ViU2VydmVyOiDov5Tlm57mlbDmja5cblx0XHRcdFdlYlNlcnZlciAtPiBDYWNoZTogbGVhc2XmsqHmnInov4fmnJ_vvIzmiY3orr7nva7mlbDmja5cblx0XHRlbmRcblx0ZW5kXG49PSDmm7TmlrDmlbDmja4gPT1cbldlYlNlcnZlciAtPiBEQjog5pu05paw5pWw5o2uXG5EQiAtLT4gV2ViU2VydmVyOiDov5Tlm57mm7TmlrDnu5PmnpxcbldlYlNlcnZlciAtPiBDYWNoZTog5aSx5pWI57yT5a2YXG5DYWNoZSAtPiBDYWNoZSA6IOabtOaWsGxlYXNlXG5AZW5kdW1sIiwidXJsIjoiaHR0cHM6Ly9jZG4ubmxhcmsuY29tL3l1cXVlL19fcHVtbC9jZjFiMGE1ZTc0ODA4M2ZkOGMzNjliZDAwMjRmYmE2NC5zdmciLCJpZCI6Im5CcU9SIiwibWFyZ2luIjp7InRvcCI6dHJ1ZSwiYm90dG9tIjp0cnVlfSwiY2FyZCI6ImRpYWdyYW0ifQ==">有兴趣的话，可以看看这篇文档<br><a target="_blank" rel="noopener" href="https://www.usenix.org/system/files/conference/nsdi13/nsdi13-final170_update.pdf">https://www.usenix.org/system/files/conference/nsdi13/nsdi13-final170_update.pdf</a><br>​</p>
+<h3 id="解决缓存击穿-amp-脏数据"><a href="#解决缓存击穿-amp-脏数据" class="headerlink" title="解决缓存击穿&amp;脏数据"></a>解决缓存击穿&amp;脏数据</h3><p>1.数据库查询加锁<br><img src="https://cdn.nlark.com/yuque/__puml/8e3c4decea0b2feed13b21312e2b2f28.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcbnRpdGxlIOaVsOaNruW6k-afpeivouWKoOmUgVxuYXV0b251bWJlclxuXG5wYXJ0aWNpcGFudCBcIldlYlNlcnZlclwiIGFzIFdlYlNlcnZlclxucGFydGljaXBhbnQgXCJDYWNoZVwiIGFzIENhY2hlICNkYXJrY3lhblxucGFydGljaXBhbnQgXCJEQlwiIGFzIERCICNvcmFuZ2Vcbj09IOafpeivoiA9PVxuV2ViU2VydmVyIC0-IENhY2hlOiDmn6Xor6LmlbDmja5cblx0Z3JvdXAg57yT5a2Y5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5Zue57yT5a2Y5pWw5o2uXG5cdGVsc2Ug57yT5a2Y5LiN5ZG95LitXG5cdFx0Q2FjaGUgLS0-IFdlYlNlcnZlcjog6L-U5ZuebnVsbFxuXHRcdFdlYlNlcnZlciAtPiBXZWJTZXJ2ZXIgOiDojrflj5bliIbluIPlvI_plIFcblx0XHRncm91cCDojrflj5bmiJDlip9cblx0XHRcdFdlYlNlcnZlciAtPiBDYWNoZSA6IOiuvue9rmxlYXNlX2tleToxXG5cdFx0XHRXZWJTZXJ2ZXIgLT4gREI6IOafpeivouaVsOaNrlxuXHRcdFx0REIgLS0-IFdlYlNlcnZlcjog6L-U5Zue5pWw5o2uXG5cdFx0XHRncm91cCBsZWFzZV9rZXnlrZjlnKhcblx0XHRcdFx0V2ViU2VydmVyIC0-IENhY2hlOiDorr7nva7mlbDmja5cblx0XHRcdGVuZFxuXHRcdFx0V2ViU2VydmVyIC0-IFdlYlNlcnZlciA6IOmHiuaUvuWIhuW4g-W8j-mUgVxuXHRcdGVsc2Ug6I635Y-W5aSx6LSlXG5cdFx0XHRXZWJTZXJ2ZXIgLT4gV2ViU2VydmVyIDog562J5b6F5LiA5bCP5q615pe26Ze0XG5cdFx0XHRXZWJTZXJ2ZXIgLT4gQ2FjaGU6IOafpeivoue8k-WtmOaVsOaNrlxuXHRcdFx0bm90ZSByaWdodFxuXHRcdFx05Li65LuA5LmI6KaB562J5LiA5q615pe26Ze05YaN5Y675p-l6K-i57yT5a2Y77yM6ICM5LiN5piv562J6ZSB5ZGi77yfXG5cdFx0XHTmiYDmnInnmoTlubblj5Hpg73lnKjnrYnplIHvvIzpnIDopoHkuIDkuKrkuKrmiafooYzjgIJcblx0XHRcdGVuZCBub3RlXG5cdFx0XHRDYWNoZSAtLT4gV2ViU2VydmVyOiDov5Tlm57nvJPlrZjmlbDmja5cblx0ZW5kXG49PSDmm7TmlrDmlbDmja4gPT1cbldlYlNlcnZlciAtPiBEQjog5pu05paw5pWw5o2uXG5EQiAtLT4gV2ViU2VydmVyOiDov5Tlm57mm7TmlrDnu5PmnpxcbldlYlNlcnZlciAtPiBDYWNoZTog5aSx5pWI57yT5a2YXG5XZWJTZXJ2ZXIgLT4gQ2FjaGU6IOWIoOmZpGxlYXNlX2tleVxuQGVuZHVtbCIsInVybCI6Imh0dHBzOi8vY2RuLm5sYXJrLmNvbS95dXF1ZS9fX3B1bWwvOGUzYzRkZWNlYTBiMmZlZWQxM2IyMTMxMmUyYjJmMjguc3ZnIiwiaWQiOiJmYm1WdyIsIm1hcmdpbiI6eyJ0b3AiOnRydWUsImJvdHRvbSI6dHJ1ZX0sImNhcmQiOiJkaWFncmFtIn0="></p>
+<p>当然，还有一些保底手段去处理缓存不命中的问题。<br>比如，定时更新缓存数据。</p>
+<h3 id="解决缓存雪崩"><a href="#解决缓存雪崩" class="headerlink" title="解决缓存雪崩"></a>解决缓存雪崩</h3><p>缓存雪崩与缓存击穿的最大的区别，就是<br>击穿是一个key或者少量key失效时，大量并发请求；<br>而缓存雪崩则是大量key同时失效。<br>引发这个问题的根本原因是，</p>
+<ol>
+<li>key的设置时间相同；【失效时间设置加一个随机值】</li>
+<li>缓存不可用；【缓存高可用建设，少量机器宕机；大量机器宕机之类的故障处理】</li>
+</ol>
+<h3 id="解决缓存穿透"><a href="#解决缓存穿透" class="headerlink" title="解决缓存穿透"></a>解决缓存穿透</h3><p>根本原因：请求缓存中不存在的值。然后就请求就必须去数据库。<br>处理方案：</p>
+<ol>
+<li>接口校验；</li>
+<li>缓存null值或无效值。</li>
+<li>增加布隆过滤器。【就是去缓存拿数据之前，先去布隆过滤器里查询数据是不是存在；不存在就直接返回了】</li>
+</ol>
+<p>​</p>
+<h3 id="其他方式"><a href="#其他方式" class="headerlink" title="其他方式"></a>其他方式</h3><p>当然，这个Cache Aside还会有很多变种误导大家。有些说法让我一度也觉得没啥问题；<br>比如。</p>
+<ol>
+<li>先删缓存，再更新数据库【并发查询和更新，可能出现脏数据；缓存击穿；异常】【也有解决方案：延时双删】</li>
+<li>更新数据库，再更新缓存【并发更新脏数据；异常】</li>
+<li>更新缓存，再更新数据库【并发更新脏数据；异常】</li>
+</ol>
+<p>这些也不一定是错的。我们可以辩证的去看待，他们都在努力的去解决一个问题，就是数据一致性的问题。<br><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904137654534158#heading-12">https://juejin.cn/post/6844904137654534158#heading-12</a>这个博客分析的挺好的。<br>​</p>
+<h2 id="Read-x2F-Write-Through"><a href="#Read-x2F-Write-Through" class="headerlink" title="Read&#x2F;Write Through"></a>Read&#x2F;Write Through</h2><h3 id="存在问题"><a href="#存在问题" class="headerlink" title="存在问题"></a>存在问题</h3><p>并发：更新请求处理时，读请求是否要被阻塞。<br>阻塞的话，更新数据库时，大量读请求阻塞。跟直接访问数据库的区别在哪呢。<br>不阻塞的话，获取的就不是最新的数据。如果更新数据库失败就会出现幻读。<br>或者引入版本管理。那开发的代价就很高了。<br>异常：更新数据库失败，出现幻读。<br>所以要花很大的代价去维护缓存和数据库的一致性，而且数据库表的数据不尽相同，这一点处理起来应该也很困难。</p>
+<h2 id="Write-Behind-Caching"><a href="#Write-Behind-Caching" class="headerlink" title="Write Behind Caching"></a>Write Behind Caching</h2><p><img src="https://cdn.nlark.com/yuque/__puml/a0ed468999d29a3a2f0c91e2e9f3e647.svg#lake_card_v2=eyJ0eXBlIjoicHVtbCIsImNvZGUiOiJAc3RhcnR1bWxcbnNraW5wYXJhbSBQYXJ0aWNpcGFudFBhZGRpbmcgMjBcbmF1dG9udW1iZXJcblxucGFydGljaXBhbnQgXCJXZWJTZXJ2ZXJcIiBhcyBXZWJTZXJ2ZXJcbmJveCBjYWNoZSBzZXZpY2VcbnBhcnRpY2lwYW50IFwiQ2FjaGVcIiBhcyBDYWNoZSAjZGFya2N5YW5cbnBhcnRpY2lwYW50IFwiREJcIiBhcyBEQiAjb3JhbmdlXG5lbmQgYm94XG49PSDmn6Xor6IgPT1cbldlYlNlcnZlciAtPiBDYWNoZTog5p-l6K-i5pWw5o2uXG5cdGdyb3VwIOe8k-WtmOS4jeWRveS4rVxuXHRcdENhY2hlIC0-IERCOiDmn6Xor6LmlbDmja5cblx0XHREQiAtLT4gQ2FjaGU6IOi_lOWbnuaVsOaNrlxuXHRcdENhY2hlIC0-IENhY2hlOiDorr7nva7mlbDmja5cblx0ZW5kXG5DYWNoZSAtLT4gV2ViU2VydmVyOiDov5Tlm57nvJPlrZjmlbDmja5cbj09IOabtOaWsO-8iOW8guatpe-8iSA9PVxuV2ViU2VydmVyIC0-IENhY2hlOiDmm7TmlrDmlbDmja5cbkNhY2hlIC0-IENhY2hlOiDmm7TmlrDnvJPlrZhcbkNhY2hlIC0tPiBXZWJTZXJ2ZXI6IOi_lOWbnuabtOaWsOe7k-aenFxuZ3JvdXAg5byC5q2l5pu05pawZGJcblx0Q2FjaGUgLT4gREI6IOabtOaWsOaVsOaNrlxuXHREQiAtLT4gQ2FjaGU6IOi_lOWbnuabtOaWsOe7k-aenFxuZW5kXG5AZW5kdW1sIiwidXJsIjoiaHR0cHM6Ly9jZG4ubmxhcmsuY29tL3l1cXVlL19fcHVtbC9hMGVkNDY4OTk5ZDI5YTNhMmYwYzkxZTJlOWYzZTY0Ny5zdmciLCJpZCI6IkNrQ05LIiwibWFyZ2luIjp7InRvcCI6dHJ1ZSwiYm90dG9tIjp0cnVlfSwiY2FyZCI6ImRpYWdyYW0ifQ=="></p>
+<h3 id="存在问题-1"><a href="#存在问题-1" class="headerlink" title="存在问题"></a>存在问题</h3><p>并发：好像没啥问题<br>异常：更新数据库失败了，重试保证最终一致性。好像也没啥问题。<br>那这个异步处理的时机应该怎么维护才算合适呢？数据一设置马上就异步线程去同步数据库。<br>但是还有一个问题，可能会出现刚更新完缓存，服务器宕机了。然后数据库没更新，就会导致数据丢失。这个问题好像没办法解。<br>​</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
+<li>所以，其实综合来看，Cache Aside的方式是代价最小的。这可能也是目前被广泛使用的原因吧。</li>
+<li>如果对缓存带来的问题有相应的解决措施的话，其实，能提高性能的话，不必太过于纠结要不要使用缓存。</li>
+</ol>
+<p>​</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://coolshell.cn/articles/17416.html">https://coolshell.cn/articles/17416.html</a> （缓存更新套路）<br><a target="_blank" rel="noopener" href="https://www.usenix.org/system/files/conference/nsdi13/nsdi13-final170_update.pdf">https://www.usenix.org/system/files/conference/nsdi13/nsdi13-final170_update.pdf</a> （facebook缓存建设）<br><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904137654534158#heading-12">https://juejin.cn/post/6844904137654534158#heading-12</a> （缓存博客）<br><a target="_blank" rel="noopener" href="https://draveness.me/papers-segcache/">https://draveness.me/papers-segcache/</a> （如何提高缓存利用率）</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Cache/" rel="tag"># Cache</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/02/08/Redis%E7%BD%91%E7%BB%9C%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B/" rel="prev" title="Redis网络事件模型">
+                  <i class="fa fa-chevron-left"></i> Redis网络事件模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/02/10/Mysql%E6%8F%92%E5%85%A5%E5%88%A0%E9%99%A4%E6%AD%BB%E9%94%81%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/" rel="next" title="Mysql插入删除死锁问题排查">
+                  Mysql插入删除死锁问题排查 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Skitii</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">29k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">26 分钟</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+<span id="sitetime"></span>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+		Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+		year - 作为date对象的年份，为4位年份值
+		month - 0-11之间的整数，做为date对象的月份
+		day - 1-31之间的整数，做为date对象的天数
+		hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+		minutes - 0-59之间的整数，做为date对象的分钟数
+		seconds - 0-59之间的整数，做为date对象的秒数
+		microseconds - 0-999之间的整数，做为date对象的毫秒数
+        */
+		var t1 = Date.UTC(2022,02,07,15,00,00); //北京时间2018-2-13 00:00:00
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" @Skitii 已安全提供服务 "+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒 💗";
+	}
+	siteTime();
+</script>
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script class="next-config" data-name="chatra" type="application/json">{"enable":true,"async":true,"id":"H8oixnws8SKYQkjBz"}</script>
+<script src="/js/third-party/chat/chatra.js"></script>
+<script async src="https://call.chatra.io/chatra.js"></script>
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":1}});</script></body>
+</html>

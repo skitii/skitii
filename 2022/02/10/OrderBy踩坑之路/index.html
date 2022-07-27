@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+
+<meta name="baidu-site-verification" content="code-AhZIkdDG9J" />
+<meta name="google-site-verification" content="PeC9Clz1swOOWEProA3d9p39srZKONgJreLma19x0Cc" />
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="PeC9Clz1swOOWEProA3d9p39srZKONgJreLma19x0Cc">
+  <meta name="baidu-site-verification" content="code-AhZIkdDG9J">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/purple/pace-theme-flash.css">
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"skitii.vercel.app","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.10.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+  <meta name="description" content="OrderBy并不是你想象的这么简单">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OrderBy踩坑之路">
+<meta property="og:url" content="https://skitii.vercel.app/2022/02/10/OrderBy%E8%B8%A9%E5%9D%91%E4%B9%8B%E8%B7%AF/index.html">
+<meta property="og:site_name" content="Skitii">
+<meta property="og:description" content="OrderBy并不是你想象的这么简单">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/21760570/1640936474883-61cb4d73-c389-4594-89cb-4a14206dc3f7.png#clientId=u59529091-3b42-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=147&id=u82d37e53&margin=%5Bobject%20Object%5D&name=image.png&originHeight=147&originWidth=354&originalType=binary&ratio=1&rotation=0&showTitle=false&size=6339&status=done&style=none&taskId=u46f7b41f-446e-43b4-be8d-c181006d446&title=&width=354">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641391457565-51184cb0-bb21-4d18-a2ce-22d80d6626d0.png#clientId=u32680ef7-dac2-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=331&id=u82d961fa&margin=%5Bobject%20Object%5D&name=image.png&originHeight=662&originWidth=821&originalType=binary&ratio=1&rotation=0&showTitle=false&size=286633&status=done&style=none&taskId=u3444be28-f0e2-4a15-bdc4-c743785dd80&title=&width=410.5">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641350356024-e686092a-4f2b-4839-86e7-76279c056aaa.png#clientId=ucfe51a14-d7a8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=184&id=u334558af&margin=%5Bobject%20Object%5D&name=image.png&originHeight=184&originWidth=562&originalType=binary&ratio=1&rotation=0&showTitle=false&size=23314&status=done&style=none&taskId=ub784c7c7-78e2-48d9-9cd2-b319335832d&title=&width=562">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641350388019-c5df714f-a78f-4d27-b3ee-52803649bcfb.png#clientId=ucfe51a14-d7a8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=295&id=u9fb0fdb4&margin=%5Bobject%20Object%5D&name=image.png&originHeight=295&originWidth=1039&originalType=binary&ratio=1&rotation=0&showTitle=false&size=34447&status=done&style=none&taskId=ue8aa8218-778b-46e0-b77e-a5f5c1a588b&title=&width=1039">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641350307226-6c2f01a6-bb56-4954-a410-c01f95eee9a6.png#clientId=ucfe51a14-d7a8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=295&id=uf9d74344&margin=%5Bobject%20Object%5D&name=image.png&originHeight=295&originWidth=1042&originalType=binary&ratio=1&rotation=0&showTitle=false&size=46997&status=done&style=none&taskId=u8863e4fc-21d0-4e19-aefe-7e880c8844c&title=&width=1042">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641298798315-e0ebaf93-37ab-4ed1-9d6c-86361c3f0917.png#clientId=u2cf24bf6-ebca-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=267&id=u2372b142&margin=%5Bobject%20Object%5D&name=image.png&originHeight=267&originWidth=1048&originalType=binary&ratio=1&rotation=0&showTitle=false&size=43638&status=done&style=none&taskId=u6d05b52a-804f-4976-8e6b-308279251e6&title=&width=1048">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641298878764-07c44d9b-a640-4e50-810d-f78df27b05e9.png#clientId=u2cf24bf6-ebca-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=100&id=u412b29a4&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=711&originalType=binary&ratio=1&rotation=0&showTitle=false&size=16748&status=done&style=none&taskId=u64fa963d-e263-43c7-9636-0cd7f224f25&title=&width=711">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641344175886-63f4be2a-c38a-4a4d-b312-96981b04429c.png#clientId=u96a7a8cc-ca77-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=57&id=u20adb565&margin=%5Bobject%20Object%5D&name=image.png&originHeight=57&originWidth=916&originalType=binary&ratio=1&rotation=0&showTitle=false&size=9574&status=done&style=none&taskId=u8011232e-f09c-4510-82cd-a7cb31ef99e&title=&width=916">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641430639579-afd72ac0-7b42-41d2-98b9-2e41fe7fd94b.png#clientId=u21c5884e-59d6-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=338&id=u8a6cb280&margin=%5Bobject%20Object%5D&name=image.png&originHeight=338&originWidth=1014&originalType=binary&ratio=1&rotation=0&showTitle=false&size=50951&status=done&style=none&taskId=ubb5d1f7d-2ab5-4fed-87ef-acbd0b7468c&title=&width=1014">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641430719394-81da8131-9083-481c-af24-e48d7cf54759.png#clientId=u21c5884e-59d6-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=341&id=u46755490&margin=%5Bobject%20Object%5D&name=image.png&originHeight=341&originWidth=1029&originalType=binary&ratio=1&rotation=0&showTitle=false&size=50745&status=done&style=none&taskId=uf47167cc-ba41-42c2-ad6a-37cdbb8e795&title=&width=1029">
+<meta property="article:published_time" content="2022-02-10T12:13:06.000Z">
+<meta property="article:modified_time" content="2022-07-27T02:51:59.874Z">
+<meta property="article:author" content="Skitii">
+<meta property="article:tag" content="Mysql">
+<meta property="article:tag" content="问题排查">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2021/png/21760570/1640936474883-61cb4d73-c389-4594-89cb-4a14206dc3f7.png#clientId=u59529091-3b42-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=147&id=u82d37e53&margin=%5Bobject%20Object%5D&name=image.png&originHeight=147&originWidth=354&originalType=binary&ratio=1&rotation=0&showTitle=false&size=6339&status=done&style=none&taskId=u46f7b41f-446e-43b4-be8d-c181006d446&title=&width=354">
+
+
+<link rel="canonical" href="https://skitii.vercel.app/2022/02/10/OrderBy%E8%B8%A9%E5%9D%91%E4%B9%8B%E8%B7%AF/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://skitii.vercel.app/2022/02/10/OrderBy%E8%B8%A9%E5%9D%91%E4%B9%8B%E8%B7%AF/","path":"2022/02/10/OrderBy踩坑之路/","title":"OrderBy踩坑之路"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>OrderBy踩坑之路 | Skitii</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+
+  <!--pjax：防止跳转页面音乐暂停-->
+  <script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Skitii</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">A Lazy Guy.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+	
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%88%E7%9C%8B%E4%B8%80%E6%9D%A1%E7%A4%BE%E6%AD%BBSQL"><span class="nav-number">1.</span> <span class="nav-text">先看一条社死SQL</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E6%8E%92%E5%BA%8F%E8%AF%A6%E8%A7%A3"><span class="nav-number">2.</span> <span class="nav-text">索引排序详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E7%9A%84%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">2.0.1.</span> <span class="nav-text">索引的存储方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E6%8E%92%E5%BA%8F%E6%9F%A5%E8%AF%A2%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90"><span class="nav-number">2.0.2.</span> <span class="nav-text">索引排序查询执行过程分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A1%A8%E7%BB%93%E6%9E%84"><span class="nav-number">2.0.2.1.</span> <span class="nav-text">表结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#where%E8%B5%B0%E7%B4%A2%E5%BC%95%E6%A1%88%E4%BE%8B"><span class="nav-number">2.0.2.2.</span> <span class="nav-text">where走索引案例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#order-by%E8%B5%B0%E7%B4%A2%E5%BC%95%E6%A1%88%E4%BE%8B"><span class="nav-number">2.0.2.3.</span> <span class="nav-text">order by走索引案例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#where%E5%92%8Corder-by%E9%83%BD%E8%B5%B0%E7%B4%A2%E5%BC%95"><span class="nav-number">2.0.2.4.</span> <span class="nav-text">where和order by都走索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#where%E5%92%8Corder-by%E9%83%BD%E4%B8%8D%E8%B5%B0%E7%B4%A2%E5%BC%95"><span class="nav-number">2.0.2.5.</span> <span class="nav-text">where和order by都不走索引</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#filesort"><span class="nav-number">2.0.3.</span> <span class="nav-text">filesort</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Skitii"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Skitii</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="sidebar-button site-overview-item animated">
+    <button><i class="fa fa-comment"></i>
+      Contact
+    </button>
+  </div>
+
+
+
+        </div>
+      </div>
+
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=300 height=450 src="//music.163.com/outchain/player?type=0&id=7179117219&auto=1&height=430"></iframe>
+
+    </div>
+  
+  </aside>
+  
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://skitii.vercel.app/2022/02/10/OrderBy%E8%B8%A9%E5%9D%91%E4%B9%8B%E8%B7%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Skitii">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Skitii">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          OrderBy踩坑之路
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-02-10 20:13:06" itemprop="dateCreated datePublished" datetime="2022-02-10T20:13:06+08:00">2022-02-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-07-27 10:51:59" itemprop="dateModified" datetime="2022-07-27T10:51:59+08:00">2022-07-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+            <div class="post-description">OrderBy并不是你想象的这么简单</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <meta name="referrer" content="no-referrer" />
+<span id="more"></span>
+
+<h1 id="先看一条社死SQL"><a href="#先看一条社死SQL" class="headerlink" title="先看一条社死SQL"></a>先看一条社死SQL</h1><blockquote>
+<p><strong>SELECT</strong>*<strong>FROM</strong> t_device_online <strong>where</strong> device_id&#x3D;8788 <strong>orderby</strong> start_time **desc limit **1;</p>
+</blockquote>
+<p>其中 device_id 没有索引， start_time有索引。表中数据量大概200w。这条语句执行平均耗时3s多。同时十几条这个请求。直接占住了数据库链接。导致后续请求调用都超时了。<br>200w数据查一条数据要花这么久吗？device_id 没有索引，全表扫描可能需要是吧。<br>但是我们通过执行计划分析，发现它走了start_time的联合索引。<br>好，我们去掉 <strong>orderby</strong> start_time <strong>desc</strong> 试试，结果只花了600ms。？ 索引比全表扫描还慢？<br>去掉 <strong>where</strong> device_id&#x3D;8788 试试，也就 不到 10ms。 ？<br>这里涉及到两个知识点，一是索引，二是排序。</p>
+<h1 id="索引排序详解"><a href="#索引排序详解" class="headerlink" title="索引排序详解"></a>索引排序详解</h1><h3 id="索引的存储方式"><a href="#索引的存储方式" class="headerlink" title="索引的存储方式"></a>索引的存储方式</h3><p>主键索引<br><img src="https://cdn.nlark.com/yuque/0/2021/png/21760570/1640936474883-61cb4d73-c389-4594-89cb-4a14206dc3f7.png#clientId=u59529091-3b42-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=147&id=u82d37e53&margin=%5Bobject%20Object%5D&name=image.png&originHeight=147&originWidth=354&originalType=binary&ratio=1&rotation=0&showTitle=false&size=6339&status=done&style=none&taskId=u46f7b41f-446e-43b4-be8d-c181006d446&title=&width=354" alt="image.png"><br>联合索引<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641391457565-51184cb0-bb21-4d18-a2ce-22d80d6626d0.png#clientId=u32680ef7-dac2-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=331&id=u82d961fa&margin=%5Bobject%20Object%5D&name=image.png&originHeight=662&originWidth=821&originalType=binary&ratio=1&rotation=0&showTitle=false&size=286633&status=done&style=none&taskId=u3444be28-f0e2-4a15-bdc4-c743785dd80&title=&width=410.5" alt="image.png"></p>
+<h3 id="索引排序查询执行过程分析"><a href="#索引排序查询执行过程分析" class="headerlink" title="索引排序查询执行过程分析"></a>索引排序查询执行过程分析</h3><p>一次查询最多只会用到一个索引，所以可能存在下面几种情况</p>
+<ol>
+<li>where走索引</li>
+<li>order by 走索引</li>
+<li>where和order by都走索引</li>
+<li>where和order by都不走索引<h4 id="表结构"><a href="#表结构" class="headerlink" title="表结构"></a>表结构</h4><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641350356024-e686092a-4f2b-4839-86e7-76279c056aaa.png#clientId=ucfe51a14-d7a8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=184&id=u334558af&margin=%5Bobject%20Object%5D&name=image.png&originHeight=184&originWidth=562&originalType=binary&ratio=1&rotation=0&showTitle=false&size=23314&status=done&style=none&taskId=ub784c7c7-78e2-48d9-9cd2-b319335832d&title=&width=562" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641350388019-c5df714f-a78f-4d27-b3ee-52803649bcfb.png#clientId=ucfe51a14-d7a8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=295&id=u9fb0fdb4&margin=%5Bobject%20Object%5D&name=image.png&originHeight=295&originWidth=1039&originalType=binary&ratio=1&rotation=0&showTitle=false&size=34447&status=done&style=none&taskId=ue8aa8218-778b-46e0-b77e-a5f5c1a588b&title=&width=1039" alt="image.png"><h4 id="where走索引案例"><a href="#where走索引案例" class="headerlink" title="where走索引案例"></a>where走索引案例</h4></li>
+</ol>
+<p><strong>SELECT</strong> * **FROM **test_online **where **start_time &gt; 1609842103 **order by **device_id  <strong>desc</strong>; 【索引值start_time】<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641350307226-6c2f01a6-bb56-4954-a410-c01f95eee9a6.png#clientId=ucfe51a14-d7a8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=295&id=uf9d74344&margin=%5Bobject%20Object%5D&name=image.png&originHeight=295&originWidth=1042&originalType=binary&ratio=1&rotation=0&showTitle=false&size=46997&status=done&style=none&taskId=u8863e4fc-21d0-4e19-aefe-7e880c8844c&title=&width=1042" alt="image.png"><br>执行过程：</p>
+<ol>
+<li>走索引过程找出 start_time &gt; 1609842103 的 rowid（默认是主键id）</li>
+<li>将符合条件的rowid和排序字段（device_id）放入到排序缓存区中排序。</li>
+<li>然后在根据排序好的rowid去查询row记录。</li>
+</ol>
+<h4 id="order-by走索引案例"><a href="#order-by走索引案例" class="headerlink" title="order by走索引案例"></a>order by走索引案例</h4><blockquote>
+<p>order by走索引的情况特别坑，如果走错了索引，效率比全表扫描还慢的多，而且，加上limit还会帮你加上索引。这里就能解释上面的社死SQL问题了。</p>
+</blockquote>
+<p><strong>SELECT</strong> * **FROM **test_online **where **device_id&#x3D;10060 **order by **start_time **desc **;<br><strong>SELECT</strong> * **FROM **test_online **where **device_id&#x3D;10060 **order by **start_time <strong>desc limit</strong> 0,20;<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641298798315-e0ebaf93-37ab-4ed1-9d6c-86361c3f0917.png#clientId=u2cf24bf6-ebca-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=267&id=u2372b142&margin=%5Bobject%20Object%5D&name=image.png&originHeight=267&originWidth=1048&originalType=binary&ratio=1&rotation=0&showTitle=false&size=43638&status=done&style=none&taskId=u6d05b52a-804f-4976-8e6b-308279251e6&title=&width=1048" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641298878764-07c44d9b-a640-4e50-810d-f78df27b05e9.png#clientId=u2cf24bf6-ebca-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=100&id=u412b29a4&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=711&originalType=binary&ratio=1&rotation=0&showTitle=false&size=16748&status=done&style=none&taskId=u64fa963d-e263-43c7-9636-0cd7f224f25&title=&width=711" alt="image.png"></p>
+<p>执行过程(不加limit)：</p>
+<ol>
+<li>全部扫描找到 device_id&#x3D;10060 的 rowid（全表顺序扫描）。</li>
+<li>将符合条件的rowid和排序字段（start_time）放入到排序缓存区中排序</li>
+<li>然后在根据排序好的rowid去查询row记录（回表查）</li>
+</ol>
+<p>执行过程（加上limit）：</p>
+<ol>
+<li>先根据order by的索引去查询符合where条件的数据；（相当于是走一个无效的索引去查找值，就是随机查找了，效率自然慢）</li>
+<li>将符合条件的rowid和排序字段（start_time）放入到排序缓存区中排序</li>
+<li>然后在根据排序好的rowid去查询row记录</li>
+</ol>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641344175886-63f4be2a-c38a-4a4d-b312-96981b04429c.png#clientId=u96a7a8cc-ca77-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=57&id=u20adb565&margin=%5Bobject%20Object%5D&name=image.png&originHeight=57&originWidth=916&originalType=binary&ratio=1&rotation=0&showTitle=false&size=9574&status=done&style=none&taskId=u8011232e-f09c-4510-82cd-a7cb31ef99e&title=&width=916" alt="image.png"></p>
+<blockquote>
+<p>有些博客讲这个慢在第三步，但是我想不通，<br>1.通过主键id回表应该也不至于很慢，而且mysql也有优化，数据量小的情况下，就会将所有的数据在排序缓存区中处理，不需要二次回表。<br>2.无法解释上面的情况，两次查询数据都为null，但是耗时差距却这么大。</p>
+</blockquote>
+<p>​</p>
+<p>​</p>
+<h4 id="where和order-by都走索引"><a href="#where和order-by都走索引" class="headerlink" title="where和order by都走索引"></a>where和order by都走索引</h4><p><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641430639579-afd72ac0-7b42-41d2-98b9-2e41fe7fd94b.png#clientId=u21c5884e-59d6-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=338&id=u8a6cb280&margin=%5Bobject%20Object%5D&name=image.png&originHeight=338&originWidth=1014&originalType=binary&ratio=1&rotation=0&showTitle=false&size=50951&status=done&style=none&taskId=ubb5d1f7d-2ab5-4fed-87ef-acbd0b7468c&title=&width=1014" alt="image.png"><br>执行过程：</p>
+<ol>
+<li>通过索引去过滤where条件的数据</li>
+<li>将符合条件的rowid和排序字段放入到排序缓存区中排序</li>
+<li>根据排序好的rowid查询row记录</li>
+</ol>
+<p>​</p>
+<h4 id="where和order-by都不走索引"><a href="#where和order-by都不走索引" class="headerlink" title="where和order by都不走索引"></a>where和order by都不走索引</h4><p><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1641430719394-81da8131-9083-481c-af24-e48d7cf54759.png#clientId=u21c5884e-59d6-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=341&id=u46755490&margin=%5Bobject%20Object%5D&name=image.png&originHeight=341&originWidth=1029&originalType=binary&ratio=1&rotation=0&showTitle=false&size=50745&status=done&style=none&taskId=uf47167cc-ba41-42c2-ad6a-37cdbb8e795&title=&width=1029" alt="image.png"><br>执行过程：</p>
+<ol>
+<li>全表扫描where条件的数据</li>
+<li>将符合条件的rowid和排序字段放入到排序缓存区中排序</li>
+<li>根据排序好的rowid查询row记录<h3 id="filesort"><a href="#filesort" class="headerlink" title="filesort"></a>filesort</h3>我们注意到order by走索引不加limit和加limit的两种情况下，他们的explain最后一列，走全表扫描的有use filesort，另一个没有。<br>在我们的认知中，使用文件排序肯定比没有使用文件排序要快对吧，比较磁盘IO肯定更耗时嘛。<br>但是这里却相反了。当然现在我们知道了，是因为它走错了索引，导致了非常多无效的随机IO。<br>但是我们也可以了解一下这个filesort。<br>filesort不一定就会在文件中排序，<blockquote>
+<p><em>filesort is not always bad and it does not mean that a file is saved on disk. If the size of the data is small, it is performed in memory.</em></p>
+</blockquote>
+</li>
+</ol>
+<p>按排序方式分为：</p>
+<ol>
+<li>数据量小时，在内存中快排</li>
+<li>数据量大时，在内存中分块快排，再在磁盘上将各个块做归并</li>
+</ol>
+<p>上面在分析排序过程时，排序完都会回表查询row记录，但是这个不一定是这样，也可以直接将行记录全查询出来在去排序，所以排序按回表次数又可以分为：</p>
+<ol>
+<li>两次传输排序（只将rowid和排序字段放入排序缓存区，然后在回表查询）</li>
+<li>单次传输排序（直接将要查询的行数据放入排序缓存区排序，排序完直接返回，避免二次随机回表查询）</li>
+</ol>
+<p>我们知道随机回表的效率肯定比顺序IO慢，所以在mysql4.1之后的版本中，mysql优化了这个排序，<br>MySQL做了以下限制：</p>
+<ul>
+<li>所有需要的列或<strong>ORDER BY</strong>的列只要是<strong>BLOB</strong>或者<strong>TEXT</strong>类型，则使用<strong>两次传输排序</strong>。</li>
+<li>所有需要的列和<strong>ORDER BY</strong>的列总大小超过<strong>max_length_for_sort_data</strong>字节，则使<strong>用两次传输排序</strong>。</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
+<li>走索引不一定比全表扫描快，还得看你索引用的对不对，order by用索引where不用索引就是血淋淋的教训。</li>
+<li>mysql会帮你优化查询，但是优化不一定是最好的，比如本来查询走全表扫描才几百ms，但这个limit觉得才查几条数据，走索引肯定更快，结果这个索引反而更慢了。</li>
+<li>use filesort不一定就是使用文件排序，得看数据量大不大。也不一定会两次回表，看你列的数据多不多。</li>
+</ol>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000015987895">https://segmentfault.com/a/1190000015987895</a><br><a target="_blank" rel="noopener" href="https://petrunia.net/2007/08/29/how-mysql-executes-order-by/">https://petrunia.net/2007/08/29/how-mysql-executes-order-by/</a> (order by 执行过程详解)<br><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html#order-by-optimizer-control">https://dev.mysql.com/doc/refman/5.7/en/order-by-optimization.html#order-by-optimizer-control</a> (mysql order by)<br><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/limit-optimization.html">https://dev.mysql.com/doc/refman/5.7/en/limit-optimization.html</a> (mysql limit)</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+              <a href="/tags/%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/" rel="tag"># 问题排查</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/02/10/Mysql%E6%8F%92%E5%85%A5%E5%88%A0%E9%99%A4%E6%AD%BB%E9%94%81%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/" rel="prev" title="Mysql插入删除死锁问题排查">
+                  <i class="fa fa-chevron-left"></i> Mysql插入删除死锁问题排查
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/02/12/Mysql%E6%85%A2%E6%9F%A5%E8%AF%A2%E5%88%86%E6%9E%90/" rel="next" title="Mysql慢查询分析">
+                  Mysql慢查询分析 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Skitii</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">29k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">26 分钟</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+<span id="sitetime"></span>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+		Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+		year - 作为date对象的年份，为4位年份值
+		month - 0-11之间的整数，做为date对象的月份
+		day - 1-31之间的整数，做为date对象的天数
+		hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+		minutes - 0-59之间的整数，做为date对象的分钟数
+		seconds - 0-59之间的整数，做为date对象的秒数
+		microseconds - 0-999之间的整数，做为date对象的毫秒数
+        */
+		var t1 = Date.UTC(2022,02,07,15,00,00); //北京时间2018-2-13 00:00:00
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" @Skitii 已安全提供服务 "+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒 💗";
+	}
+	siteTime();
+</script>
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script class="next-config" data-name="chatra" type="application/json">{"enable":true,"async":true,"id":"H8oixnws8SKYQkjBz"}</script>
+<script src="/js/third-party/chat/chatra.js"></script>
+<script async src="https://call.chatra.io/chatra.js"></script>
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":1}});</script></body>
+</html>

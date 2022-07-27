@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+
+<meta name="baidu-site-verification" content="code-AhZIkdDG9J" />
+<meta name="google-site-verification" content="PeC9Clz1swOOWEProA3d9p39srZKONgJreLma19x0Cc" />
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="PeC9Clz1swOOWEProA3d9p39srZKONgJreLma19x0Cc">
+  <meta name="baidu-site-verification" content="code-AhZIkdDG9J">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/purple/pace-theme-flash.css">
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"skitii.vercel.app","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.10.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+  <meta property="og:type" content="article">
+<meta property="og:title" content="Java堆外内存排查">
+<meta property="og:url" content="https://skitii.vercel.app/2022/02/19/Java%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E6%8E%92%E6%9F%A5/index.html">
+<meta property="og:site_name" content="Skitii">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1642827852635-6811ba84-1bc6-45c1-a2cb-29ac69e21438.png#clientId=u8a31b6cc-a918-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=29&id=ucc172fe5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=29&originWidth=113&originalType=binary&ratio=1&rotation=0&showTitle=false&size=2239&status=done&style=none&taskId=ud0035b56-0fee-458a-9bfc-05ba8b1ef43&title=&width=113">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1642828201933-ba8b0306-9faf-45f0-a94f-bf22fdaf4cff.png#clientId=u8a31b6cc-a918-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=682&id=ubeabec97&margin=%5Bobject%20Object%5D&name=image.png&originHeight=682&originWidth=671&originalType=binary&ratio=1&rotation=0&showTitle=false&size=121957&status=done&style=none&taskId=u5552601d-8cb0-40da-865c-d20933a96a1&title=&width=671">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1642828352885-5f8dada5-a939-4832-bd19-fd540e6410fd.png#clientId=u8a31b6cc-a918-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=466&id=u2410ff95&margin=%5Bobject%20Object%5D&name=image.png&originHeight=466&originWidth=657&originalType=binary&ratio=1&rotation=0&showTitle=false&size=89919&status=done&style=none&taskId=u656ab374-bb55-4139-878d-1a45f4c6f8a&title=&width=657">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1642828527772-0c64e15c-a1d5-497a-8c07-e6da7c5d5205.png#clientId=u8a31b6cc-a918-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=81&id=u0d3b34e2&margin=%5Bobject%20Object%5D&name=image.png&originHeight=81&originWidth=670&originalType=binary&ratio=1&rotation=0&showTitle=false&size=12631&status=done&style=none&taskId=u54e9556f-1c28-4a90-911c-dfa7af4920a&title=&width=670">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1642828550191-42e4e508-3d97-44f0-b832-344558fd1625.png#clientId=u8a31b6cc-a918-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=92&id=uf558c87b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=92&originWidth=649&originalType=binary&ratio=1&rotation=0&showTitle=false&size=9624&status=done&style=none&taskId=u7e398639-8316-45b5-b269-e142192a3ed&title=&width=649">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644927476318-4c8ee2fc-4443-410a-8cf7-3f965452a520.png#clientId=u93d2d44e-1b6e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=370&id=u9fc2d627&margin=%5Bobject%20Object%5D&name=image.png&originHeight=370&originWidth=524&originalType=binary&ratio=1&rotation=0&showTitle=false&size=52913&status=done&style=none&taskId=u74ad6a6e-01d6-4f3f-b768-dae110b52b6&title=&width=524">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644927211273-50fd1b6c-d66c-4be7-af23-07e3e2fdc816.png#clientId=u93d2d44e-1b6e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=118&id=u42fb8cab&margin=%5Bobject%20Object%5D&name=image.png&originHeight=118&originWidth=599&originalType=binary&ratio=1&rotation=0&showTitle=false&size=23105&status=done&style=none&taskId=u84b8e90f-d513-43e1-ac72-f4205b55819&title=&width=599">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644928351558-654bf212-807e-4ebe-b037-7b606848d6c8.png#clientId=u17dc34e6-6de1-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=289&id=ubfaad7bd&margin=%5Bobject%20Object%5D&name=image.png&originHeight=289&originWidth=462&originalType=binary&ratio=1&rotation=0&showTitle=false&size=106819&status=done&style=none&taskId=u4fc87a58-0840-411b-9508-c3a48711e7f&title=&width=462">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644927940329-c771544a-8fd5-4bd0-8cd4-511820aa3dfb.png#clientId=u93d2d44e-1b6e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=135&id=u923b13b9&margin=%5Bobject%20Object%5D&name=image.png&originHeight=135&originWidth=633&originalType=binary&ratio=1&rotation=0&showTitle=false&size=27207&status=done&style=none&taskId=u21e69aaf-99a7-43d0-9249-b8cc923e8aa&title=&width=633">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644928118445-ca02f40c-a09b-453f-bcbd-8fb8bb283004.png#clientId=u93d2d44e-1b6e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=550&id=uc657fca9&margin=%5Bobject%20Object%5D&name=image.png&originHeight=550&originWidth=921&originalType=binary&ratio=1&rotation=0&showTitle=false&size=145818&status=done&style=none&taskId=udbdc2561-7261-4e1a-ad42-486b226c711&title=&width=921">
+<meta property="article:published_time" content="2022-02-19T11:52:32.000Z">
+<meta property="article:modified_time" content="2022-07-27T02:51:59.871Z">
+<meta property="article:author" content="Skitii">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1642827852635-6811ba84-1bc6-45c1-a2cb-29ac69e21438.png#clientId=u8a31b6cc-a918-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=29&id=ucc172fe5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=29&originWidth=113&originalType=binary&ratio=1&rotation=0&showTitle=false&size=2239&status=done&style=none&taskId=ud0035b56-0fee-458a-9bfc-05ba8b1ef43&title=&width=113">
+
+
+<link rel="canonical" href="https://skitii.vercel.app/2022/02/19/Java%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E6%8E%92%E6%9F%A5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://skitii.vercel.app/2022/02/19/Java%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E6%8E%92%E6%9F%A5/","path":"2022/02/19/Java堆外内存排查/","title":"Java堆外内存排查"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Java堆外内存排查 | Skitii</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+
+  <!--pjax：防止跳转页面音乐暂停-->
+  <script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Skitii</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">A Lazy Guy.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+	
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E5%8F%82%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">启动参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8E%B0%E8%B1%A1"><span class="nav-number">2.</span> <span class="nav-text">现象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A5%96%E4%BC%A0%E5%91%BD%E4%BB%A4"><span class="nav-number">4.</span> <span class="nav-text">祖传命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Skitii"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Skitii</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="sidebar-button site-overview-item animated">
+    <button><i class="fa fa-comment"></i>
+      Contact
+    </button>
+  </div>
+
+
+
+        </div>
+      </div>
+
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=300 height=450 src="//music.163.com/outchain/player?type=0&id=7179117219&auto=1&height=430"></iframe>
+
+    </div>
+  
+  </aside>
+  
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://skitii.vercel.app/2022/02/19/Java%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E6%8E%92%E6%9F%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Skitii">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Skitii">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java堆外内存排查
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-02-19 19:52:32" itemprop="dateCreated datePublished" datetime="2022-02-19T19:52:32+08:00">2022-02-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-07-27 10:51:59" itemprop="dateModified" datetime="2022-07-27T10:51:59+08:00">2022-07-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <meta name="referrer" content="no-referrer" />
+<span id="more"></span>
+
+<h1 id="启动参数"><a href="#启动参数" class="headerlink" title="启动参数"></a>启动参数</h1><blockquote>
+<p>java -XX:NativeMemoryTracking&#x3D;detail -XX:MetaspaceSize&#x3D;256M -XX:MaxMetaspaceSize&#x3D;256M -XX:+AlwaysPreTouch -XX:ReservedCodeCacheSize&#x3D;128m -XX:InitialCodeCacheSize&#x3D;128m -Xss512k -Xmx1g -Xms1g -XX:+UseG1GC -XX:G1HeapRegionSize&#x3D;4M -jar lib&#x2F;helfy-1.0-SNAPSHOT.jar</p>
+</blockquote>
+<h1 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h1><p>程序启动一段时间，就会被自动kill掉。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1642827852635-6811ba84-1bc6-45c1-a2cb-29ac69e21438.png#clientId=u8a31b6cc-a918-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=29&id=ucc172fe5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=29&originWidth=113&originalType=binary&ratio=1&rotation=0&showTitle=false&size=2239&status=done&style=none&taskId=ud0035b56-0fee-458a-9bfc-05ba8b1ef43&title=&width=113" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1642828201933-ba8b0306-9faf-45f0-a94f-bf22fdaf4cff.png#clientId=u8a31b6cc-a918-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=682&id=ubeabec97&margin=%5Bobject%20Object%5D&name=image.png&originHeight=682&originWidth=671&originalType=binary&ratio=1&rotation=0&showTitle=false&size=121957&status=done&style=none&taskId=u5552601d-8cb0-40da-865c-d20933a96a1&title=&width=671" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1642828352885-5f8dada5-a939-4832-bd19-fd540e6410fd.png#clientId=u8a31b6cc-a918-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=466&id=u2410ff95&margin=%5Bobject%20Object%5D&name=image.png&originHeight=466&originWidth=657&originalType=binary&ratio=1&rotation=0&showTitle=false&size=89919&status=done&style=none&taskId=u656ab374-bb55-4139-878d-1a45f4c6f8a&title=&width=657" alt="image.png"></p>
+<h1 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h1><p>从上面的jstat -gcutil 现象来看，应该不是heap OOM，也不是 Metaspace OOM。<br>那可能是堆外内存OOM，怎么验证呢？<br>通过top分析Java进程内存占用<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1642828527772-0c64e15c-a1d5-497a-8c07-e6da7c5d5205.png#clientId=u8a31b6cc-a918-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=81&id=u0d3b34e2&margin=%5Bobject%20Object%5D&name=image.png&originHeight=81&originWidth=670&originalType=binary&ratio=1&rotation=0&showTitle=false&size=12631&status=done&style=none&taskId=u54e9556f-1c28-4a90-911c-dfa7af4920a&title=&width=670" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1642828550191-42e4e508-3d97-44f0-b832-344558fd1625.png#clientId=u8a31b6cc-a918-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=92&id=uf558c87b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=92&originWidth=649&originalType=binary&ratio=1&rotation=0&showTitle=false&size=9624&status=done&style=none&taskId=u7e398639-8316-45b5-b269-e142192a3ed&title=&width=649" alt="image.png"><br>当这个内存到了3.7g多的时候，程序就会被kill掉。<br>通过jmap -heap 104139 查看Java堆内存占用<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644927476318-4c8ee2fc-4443-410a-8cf7-3f965452a520.png#clientId=u93d2d44e-1b6e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=370&id=u9fc2d627&margin=%5Bobject%20Object%5D&name=image.png&originHeight=370&originWidth=524&originalType=binary&ratio=1&rotation=0&showTitle=false&size=52913&status=done&style=none&taskId=u74ad6a6e-01d6-4f3f-b768-dae110b52b6&title=&width=524" alt="image.png"><br>我们也可以通过pmap来查看进程的内存占用。<br>pmap -x 104139 | tail -n 1<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644927211273-50fd1b6c-d66c-4be7-af23-07e3e2fdc816.png#clientId=u93d2d44e-1b6e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=118&id=u42fb8cab&margin=%5Bobject%20Object%5D&name=image.png&originHeight=118&originWidth=599&originalType=binary&ratio=1&rotation=0&showTitle=false&size=23105&status=done&style=none&taskId=u84b8e90f-d513-43e1-ac72-f4205b55819&title=&width=599" alt="image.png"><br>通过jmap和pmap可以发现，pmap的内存占用比jmap的堆配置总和还多。<br>而且pmap的RSS也一直在涨。</p>
+<blockquote>
+<p>解释一下这个RSS的含义，如下图。一般来讲共享库所占的内存应该不会很多<img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644928351558-654bf212-807e-4ebe-b037-7b606848d6c8.png#clientId=u17dc34e6-6de1-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=289&id=ubfaad7bd&margin=%5Bobject%20Object%5D&name=image.png&originHeight=289&originWidth=462&originalType=binary&ratio=1&rotation=0&showTitle=false&size=106819&status=done&style=none&taskId=u4fc87a58-0840-411b-9508-c3a48711e7f&title=&width=462" alt="image.png"><br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/3bab26d25d2e">https://www.jianshu.com/p/3bab26d25d2e</a></p>
+</blockquote>
+<p><strong>这里基本就能确定是堆外内存OOM了</strong></p>
+<p>默认来讲，堆外内存大小&#x3D;设置的堆内存大小-XX:Xmx，但是从top的结果来看，基本上在3.7多就被kill了。<br>堆内存设置的是1g，然后metaspace设置的好像是256m。那如果堆外内存是1g的话，感觉说不太通。<br>​</p>
+<p>为什么会发生堆外内存OOM呢？看看线程到底在做什么<br>先top一把<br>top -H 打印所有线程的使用情况<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644927940329-c771544a-8fd5-4bd0-8cd4-511820aa3dfb.png#clientId=u93d2d44e-1b6e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=135&id=u923b13b9&margin=%5Bobject%20Object%5D&name=image.png&originHeight=135&originWidth=633&originalType=binary&ratio=1&rotation=0&showTitle=false&size=27207&status=done&style=none&taskId=u21e69aaf-99a7-43d0-9249-b8cc923e8aa&title=&width=633" alt="image.png"><br>​</p>
+<p>这个 280376一直是用了88%的cpu，稳居榜首。<br>通过jstack看看它到底在干嘛（这里存在一个十进制转16进制的转换）<br>jstack 280375 | grep ‘44738’ -A 40<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1644928118445-ca02f40c-a09b-453f-bcbd-8fb8bb283004.png#clientId=u93d2d44e-1b6e-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=550&id=uc657fca9&margin=%5Bobject%20Object%5D&name=image.png&originHeight=550&originWidth=921&originalType=binary&ratio=1&rotation=0&showTitle=false&size=145818&status=done&style=none&taskId=udbdc2561-7261-4e1a-ad42-486b226c711&title=&width=921" alt="image.png"><br>从业务代码可以看出，应该是这个one.helfy.SleepyBean里面一直调用springboot的方式去解压jar包。用的是Inflater这个类，一直在申请堆外内存。</p>
+<h1 id="祖传命令"><a href="#祖传命令" class="headerlink" title="祖传命令"></a>祖传命令</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 观察GC情况</span><br><span class="line">ps -afx | grep java  | grep -v grep | awk <span class="string">&#x27;&#123;print $1&#125;&#x27;</span> | xargs -I&#123;&#125; jstat -gcutil &#123;&#125; <span class="number">1</span>s</span><br><span class="line"></span><br><span class="line"># 从JVM角度观察内存</span><br><span class="line">jcmd &lt;pid&gt; VM.native_memory detail</span><br><span class="line"></span><br><span class="line"># 观察内存使用情况</span><br><span class="line">pmap -x <span class="number">1</span></span><br><span class="line"></span><br><span class="line"># 排序一下内存占用</span><br><span class="line">pmap -x <span class="number">1</span> | sort -n -k3</span><br><span class="line"></span><br><span class="line"># 跟踪系统调用（看谁在分配内存）</span><br><span class="line">strace -f -e <span class="string">&#x27;brk,mmap,munmap&#x27;</span> -p &lt;pid&gt;</span><br></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p><strong>Top + jstack 分析cpu高负载场景</strong><br>假设Java进程pid&#x3D;60</p>
+<ol>
+<li>top -H 60 ，找到一个pid&#x3D;280376的高负载线程</li>
+<li>printf %x 280376 | xargs -I {} sh -C “jstack 60 | grep {}  -A 40”</li>
+</ol>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://tech.meituan.com/2019/01/03/spring-boot-native-memory-leak.html">https://tech.meituan.com/2019/01/03/spring-boot-native-memory-leak.html</a> （案例来源）<br><a target="_blank" rel="noopener" href="https://tech.meituan.com/2020/11/12/java-9-cms-gc.html">https://tech.meituan.com/2020/11/12/java-9-cms-gc.html</a> （处理思路： 场景九）</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/JVM/" rel="tag"># JVM</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/02/13/Java%E8%BF%9E%E6%8E%A5Mysql%E5%AD%97%E7%AC%A6%E9%9B%86%E8%AE%BE%E7%BD%AE%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/" rel="prev" title="Java连接Mysql字符集设置过程详解">
+                  <i class="fa fa-chevron-left"></i> Java连接Mysql字符集设置过程详解
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/04/19/Jstack-%E6%8A%93%E4%BD%8F%E6%91%B8%E9%B1%BC%E7%9A%84%E7%BA%BF%E7%A8%8B/" rel="next" title="Jstack-抓住摸鱼的线程">
+                  Jstack-抓住摸鱼的线程 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Skitii</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">29k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">26 分钟</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+<span id="sitetime"></span>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+		Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+		year - 作为date对象的年份，为4位年份值
+		month - 0-11之间的整数，做为date对象的月份
+		day - 1-31之间的整数，做为date对象的天数
+		hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+		minutes - 0-59之间的整数，做为date对象的分钟数
+		seconds - 0-59之间的整数，做为date对象的秒数
+		microseconds - 0-999之间的整数，做为date对象的毫秒数
+        */
+		var t1 = Date.UTC(2022,02,07,15,00,00); //北京时间2018-2-13 00:00:00
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" @Skitii 已安全提供服务 "+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒 💗";
+	}
+	siteTime();
+</script>
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script class="next-config" data-name="chatra" type="application/json">{"enable":true,"async":true,"id":"H8oixnws8SKYQkjBz"}</script>
+<script src="/js/third-party/chat/chatra.js"></script>
+<script async src="https://call.chatra.io/chatra.js"></script>
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":1}});</script></body>
+</html>
