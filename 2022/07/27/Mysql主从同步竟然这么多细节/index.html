@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+
+<meta name="baidu-site-verification" content="code-AhZIkdDG9J" />
+<meta name="google-site-verification" content="PeC9Clz1swOOWEProA3d9p39srZKONgJreLma19x0Cc" />
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="PeC9Clz1swOOWEProA3d9p39srZKONgJreLma19x0Cc">
+  <meta name="baidu-site-verification" content="code-AhZIkdDG9J">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/purple/pace-theme-flash.css">
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"skitii.vercel.app","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.10.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+  <meta name="description" content="踩踩Mysql主从同步的坑">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql主从同步竟然这么多细节">
+<meta property="og:url" content="https://skitii.vercel.app/2022/07/27/Mysql%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5%E7%AB%9F%E7%84%B6%E8%BF%99%E4%B9%88%E5%A4%9A%E7%BB%86%E8%8A%82/index.html">
+<meta property="og:site_name" content="Skitii">
+<meta property="og:description" content="踩踩Mysql主从同步的坑">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1657979751192-3c6cd1bc-61e8-4cbe-84e4-2c2025b9690b.png#clientId=uff23d712-cab8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=707&id=ub805f8af&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1414&originWidth=2174&originalType=binary&ratio=1&rotation=0&showTitle=false&size=557877&status=done&style=none&taskId=uf7436d59-bb9c-4005-9754-13c7cd0f9e4&title=&width=1087">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1657981768550-a2718efe-e195-4cd3-bab8-0fc1a8b47448.png#clientId=uff23d712-cab8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=488&id=uaea0d4cb&margin=%5Bobject%20Object%5D&name=image.png&originHeight=976&originWidth=2062&originalType=binary&ratio=1&rotation=0&showTitle=false&size=325690&status=done&style=none&taskId=u6e16e84d-46d1-4b28-a197-4ce9a762196&title=&width=1031">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1658027490508-e7ee5120-7e68-4cfb-80ee-c28524cbd330.png#clientId=uff23d712-cab8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=485&id=ud72141fa&margin=%5Bobject%20Object%5D&name=image.png&originHeight=970&originWidth=2036&originalType=binary&ratio=1&rotation=0&showTitle=false&size=294398&status=done&style=none&taskId=u674ce459-c4b4-4c2b-b160-f1c35dba391&title=&width=1018">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1658028153760-c22e217d-4200-47e6-9d03-b9936a8e7bb3.png#clientId=uff23d712-cab8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=720&id=ua960238a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1440&originWidth=2004&originalType=binary&ratio=1&rotation=0&showTitle=false&size=300489&status=done&style=none&taskId=u7b7ff6fd-a0e9-48c1-be71-7f1691c9dbb&title=&width=1002">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1658030021982-ac58de62-d724-4f35-bc8b-5ac7fb6d529c.png#clientId=uff23d712-cab8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=642&id=u12970df7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1284&originWidth=1872&originalType=binary&ratio=1&rotation=0&showTitle=false&size=394075&status=done&style=none&taskId=ue80ad1de-1677-4017-a872-a6e8d8d49a0&title=&width=936">
+<meta property="article:published_time" content="2022-07-27T09:07:07.000Z">
+<meta property="article:modified_time" content="2022-07-27T09:14:53.915Z">
+<meta property="article:author" content="Skitii">
+<meta property="article:tag" content="Mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/21760570/1657979751192-3c6cd1bc-61e8-4cbe-84e4-2c2025b9690b.png#clientId=uff23d712-cab8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=707&id=ub805f8af&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1414&originWidth=2174&originalType=binary&ratio=1&rotation=0&showTitle=false&size=557877&status=done&style=none&taskId=uf7436d59-bb9c-4005-9754-13c7cd0f9e4&title=&width=1087">
+
+
+<link rel="canonical" href="https://skitii.vercel.app/2022/07/27/Mysql%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5%E7%AB%9F%E7%84%B6%E8%BF%99%E4%B9%88%E5%A4%9A%E7%BB%86%E8%8A%82/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://skitii.vercel.app/2022/07/27/Mysql%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5%E7%AB%9F%E7%84%B6%E8%BF%99%E4%B9%88%E5%A4%9A%E7%BB%86%E8%8A%82/","path":"2022/07/27/Mysql主从同步竟然这么多细节/","title":"Mysql主从同步竟然这么多细节"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Mysql主从同步竟然这么多细节 | Skitii</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+
+  <!--pjax：防止跳转页面音乐暂停-->
+  <script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Skitii</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">A Lazy Guy.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+	
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">整体流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%A0%E8%BE%93%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">传输文件格式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#binlog%E7%9A%84%E4%B8%89%E7%A7%8D%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.0.1.</span> <span class="nav-text">binlog的三种格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-number">2.0.2.</span> <span class="nav-text">优缺点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E6%A8%A1%E5%BC%8F%E4%B8%8B%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">主从模式下的高可用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E5%BB%B6%E8%BF%9F"><span class="nav-number">3.1.</span> <span class="nav-text">主从延迟</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E5%BB%B6%E8%BF%9F%E7%AD%96%E7%95%A5"><span class="nav-number">3.1.1.</span> <span class="nav-text">主从延迟策略</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%AF%E9%9D%A0%E6%80%A7%E4%BC%98%E5%85%88%E7%AD%96%E7%95%A5"><span class="nav-number">3.1.1.1.</span> <span class="nav-text">可靠性优先策略</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%AF%E7%94%A8%E6%80%A7%E4%BC%98%E5%85%88%E7%AD%96%E7%95%A5"><span class="nav-number">3.1.1.2.</span> <span class="nav-text">可用性优先策略</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E5%BA%93%E5%B9%B6%E8%A1%8C%E5%A4%8D%E5%88%B6"><span class="nav-number">3.1.2.</span> <span class="nav-text">从库并行复制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%8F%91%E5%8E%9F%E5%88%99"><span class="nav-number">3.1.2.1.</span> <span class="nav-text">分发原则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%8F%91%E7%AD%96%E7%95%A5"><span class="nav-number">3.1.2.2.</span> <span class="nav-text">分发策略</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E5%BB%B6%E8%BF%9F%E4%B8%9A%E5%8A%A1%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">3.1.3.</span> <span class="nav-text">主从延迟业务解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E5%BA%93%E5%AE%95%E6%9C%BA%EF%BC%8C%E4%B8%BB%E5%A4%87%E5%88%87%E6%8D%A2"><span class="nav-number">3.2.</span> <span class="nav-text">主库宕机，主备切换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%BB%E5%A4%9A%E4%BB%8E%E6%9E%B6%E6%9E%84"><span class="nav-number">3.2.1.</span> <span class="nav-text">一主多从架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E5%A4%87%E5%88%87%E6%8D%A2"><span class="nav-number">3.2.2.</span> <span class="nav-text">主备切换</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E4%BD%8D%E7%82%B9%E7%9A%84%E4%B8%BB%E5%A4%87%E5%88%87%E6%8D%A2"><span class="nav-number">3.2.2.1.</span> <span class="nav-text">基于位点的主备切换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EGTID%E7%9A%84%E4%B8%BB%E5%A4%87%E5%88%87%E6%8D%A2"><span class="nav-number">3.2.2.2.</span> <span class="nav-text">基于GTID的主备切换</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Skitii"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Skitii</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="sidebar-button site-overview-item animated">
+    <button><i class="fa fa-comment"></i>
+      Contact
+    </button>
+  </div>
+
+
+
+        </div>
+      </div>
+
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=300 height=450 src="//music.163.com/outchain/player?type=0&id=7179117219&auto=1&height=430"></iframe>
+
+    </div>
+  
+  </aside>
+  
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://skitii.vercel.app/2022/07/27/Mysql%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5%E7%AB%9F%E7%84%B6%E8%BF%99%E4%B9%88%E5%A4%9A%E7%BB%86%E8%8A%82/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Skitii">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Skitii">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Mysql主从同步竟然这么多细节
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2022-07-27 17:07:07 / 修改时间：17:14:53" itemprop="dateCreated datePublished" datetime="2022-07-27T17:07:07+08:00">2022-07-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+            <div class="post-description">踩踩Mysql主从同步的坑</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <meta name="referrer" content="no-referrer" />
+<span id="more"></span>
+
+<h1 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h1><p><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1657979751192-3c6cd1bc-61e8-4cbe-84e4-2c2025b9690b.png#clientId=uff23d712-cab8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=707&id=ub805f8af&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1414&originWidth=2174&originalType=binary&ratio=1&rotation=0&showTitle=false&size=557877&status=done&style=none&taskId=uf7436d59-bb9c-4005-9754-13c7cd0f9e4&title=&width=1087" alt="image.png"></p>
+<ol>
+<li>主库发生数据变更，将数据写入到binlog文件中</li>
+<li>从库I&#x2F;O线程发起dump请求</li>
+<li>主库I&#x2F;O线程将指定位点的binlog推送到从库</li>
+<li>从库I&#x2F;O线程写入本地的中转日志（relay log）文件（与binlog文件一致）</li>
+<li>从库SQL线程读取relay log文件重放</li>
+</ol>
+<h1 id="传输文件格式"><a href="#传输文件格式" class="headerlink" title="传输文件格式"></a>传输文件格式</h1><p>通过上图可以看见，主库会将binlog推送从库。<br>那么binlog是什么格式？</p>
+<h3 id="binlog的三种格式"><a href="#binlog的三种格式" class="headerlink" title="binlog的三种格式"></a>binlog的三种格式</h3><ol>
+<li>statement格式： 实际执行的sql语句</li>
+<li>row格式，所有变更前后的数据（一个Table_map event , 一个 Delete_rows event）</li>
+<li>mixed格式： 默认选择statement格式，需要的时候该用row格式</li>
+</ol>
+<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>statement</td>
+<td>statement传输数据少</td>
+<td>删除语句带limit可能会存在走错索引，导致主库和从库删除的数据不一致</td>
+</tr>
+<tr>
+<td>row（常用）</td>
+<td>可以恢复数据，不会造成数据不一致</td>
+<td>row传输数据可能会很多,比较占空间。</td>
+</tr>
+<tr>
+<td>mixed</td>
+<td>继承了statement的优点，屏蔽了row的缺点</td>
+<td>不能恢复数据</td>
+</tr>
+</tbody></table>
+<p><strong>趣味问答</strong><br>如果使用now()函数插入数据，通过statement将数据同步到从库，会不会导致时间不一致？<br>不会，mysql会增加一个set timestamp&#x3D;xxxxx</p>
+<p>如果两个节点互为主备的模式下，会不会产生循环复制？<br>不会，binlog里面会记录server_id， 如果binlog里的server_id和自己的server_id一致，则不执行。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1657981768550-a2718efe-e195-4cd3-bab8-0fc1a8b47448.png#clientId=uff23d712-cab8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=488&id=uaea0d4cb&margin=%5Bobject%20Object%5D&name=image.png&originHeight=976&originWidth=2062&originalType=binary&ratio=1&rotation=0&showTitle=false&size=325690&status=done&style=none&taskId=u6e16e84d-46d1-4b28-a197-4ce9a762196&title=&width=1031" alt="image.png"></p>
+<h1 id="主从模式下的高可用"><a href="#主从模式下的高可用" class="headerlink" title="主从模式下的高可用"></a>主从模式下的高可用</h1><h2 id="主从延迟"><a href="#主从延迟" class="headerlink" title="主从延迟"></a>主从延迟</h2><p>什么情况下会造成主从延迟？</p>
+<ol>
+<li>从库机器性能差</li>
+<li>从库读压力大</li>
+<li>大事务</li>
+<li>大表DDL</li>
+</ol>
+<p>主从延迟了会有什么问题？</p>
+<ol>
+<li>主库更新了数据，从库查不到</li>
+</ol>
+<p>主从延迟了怎么处理？</p>
+<h3 id="主从延迟策略"><a href="#主从延迟策略" class="headerlink" title="主从延迟策略"></a>主从延迟策略</h3><h4 id="可靠性优先策略"><a href="#可靠性优先策略" class="headerlink" title="可靠性优先策略"></a>可靠性优先策略</h4><p>主库发现和从库存在延迟，先关闭写状态，等到延迟为0时，再开启从库写，然后将流量达到从库。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1658027490508-e7ee5120-7e68-4cfb-80ee-c28524cbd330.png#clientId=uff23d712-cab8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=485&id=ud72141fa&margin=%5Bobject%20Object%5D&name=image.png&originHeight=970&originWidth=2036&originalType=binary&ratio=1&rotation=0&showTitle=false&size=294398&status=done&style=none&taskId=u674ce459-c4b4-4c2b-b160-f1c35dba391&title=&width=1018" alt="image.png"><br>备注：图中的SBM，是seconds_behind_master参数的简写。</p>
+<ol>
+<li>判断备库B现在的seconds_behind_master，如果小于某个值（比如5秒）继续下一步，否则持续重试这一步；</li>
+<li>把主库A改成只读状态，即把readonly设置为true；</li>
+<li>判断备库B的seconds_behind_master的值，直到这个值变成0为止；</li>
+<li>把备库B改成可读写状态，也就是把readonly 设置为false；</li>
+<li>把业务请求切到备库B。</li>
+</ol>
+<p>这个切换流程，一般是由专门的HA系统来完成的，我们暂时称之为可靠性优先流程。</p>
+<h4 id="可用性优先策略"><a href="#可用性优先策略" class="headerlink" title="可用性优先策略"></a>可用性优先策略</h4><p>如果强行把步骤4、5调整到最开始执行，也就是说不等主备数据同步，直接把连接切到备库B，并且让备库B可以读写，那么系统几乎就没有不可用时间了。<br>我们把这个切换流程，暂时称作可用性优先流程。这个切换流程的代价，就是可能出现数据不一致的情况。</p>
+<h3 id="从库并行复制"><a href="#从库并行复制" class="headerlink" title="从库并行复制"></a>从库并行复制</h3><p>主从延迟的核心问题是从库执行relay log的效率追不上主库写入binlog的效率。那我们提升从库的执行relay log的能力是不是可以解决呢？<br><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1658028153760-c22e217d-4200-47e6-9d03-b9936a8e7bb3.png#clientId=uff23d712-cab8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=720&id=ua960238a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1440&originWidth=2004&originalType=binary&ratio=1&rotation=0&showTitle=false&size=300489&status=done&style=none&taskId=u7b7ff6fd-a0e9-48c1-be71-7f1691c9dbb&title=&width=1002" alt="image.png"><br>coordinator就是原来的sql_thread, 不过现在它不再直接更新数据了，只负责读取中转日志和分发事务。真正更新日志的，变成了worker线程。而work线程的个数，就是由参数slave_parallel_workers决定的。根据我的经验，把这个值设置为8~16之间最好（32核物理机的情况），毕竟备库还有可能要提供读查询，不能把CPU都吃光了。<br>但是对于事务来讲，要怎么分发给不同的线程执行呢？<br>一个个事务分发？ 可能会导致后分发的事务先执行。<br>同一个事务发给不同的worker执行？ 先后顺序问题也会造成数据不一致。</p>
+<h4 id="分发原则"><a href="#分发原则" class="headerlink" title="分发原则"></a>分发原则</h4><ol>
+<li>不能造成更新覆盖。同一行的两个事务，必须分发到同一个worker中</li>
+<li>同一个事务不能拆开，必须放到同一个worker中执行</li>
+</ol>
+<h4 id="分发策略"><a href="#分发策略" class="headerlink" title="分发策略"></a>分发策略</h4><p><strong>按表分发策略</strong><br>很好理解，但是如果出现热点表就可能退化成了单线程复制了<br><strong>按行分发策略</strong><br>要解决热点表的并行复制问题，就需要一个按行并行复制的方案。按行复制的核心思路是：如果两个事务没有更新相同的行，它们在备库上可以并行执行。显然，这个模式要求binlog格式必须是row。<br><strong>约束条件</strong><br>这两个方案其实都有一些约束条件：</p>
+<ol>
+<li>要能够从binlog里面解析出表名、主键值和唯一索引的值。也就是说，主库的binlog格式必须是row；</li>
+<li>表必须有主键；</li>
+<li>不能有外键。表上如果有外键，级联更新的行不会记录在binlog中，这样冲突检测就不准确。</li>
+</ol>
+<h3 id="主从延迟业务解决方案"><a href="#主从延迟业务解决方案" class="headerlink" title="主从延迟业务解决方案"></a>主从延迟业务解决方案</h3><ul>
+<li>强制走主库方案；</li>
+<li>sleep方案；</li>
+<li>判断主备无延迟方案；</li>
+<li>配合semi-sync方案（等从库ack之后，主库的commit才算成功）；</li>
+<li>等主库位点方案；</li>
+<li>等GTID方案。</li>
+</ul>
+<h2 id="主库宕机，主备切换"><a href="#主库宕机，主备切换" class="headerlink" title="主库宕机，主备切换"></a>主库宕机，主备切换</h2><p>先来看看互联网一主多从的玩法</p>
+<h3 id="一主多从架构"><a href="#一主多从架构" class="headerlink" title="一主多从架构"></a>一主多从架构</h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/21760570/1658030021982-ac58de62-d724-4f35-bc8b-5ac7fb6d529c.png#clientId=uff23d712-cab8-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=642&id=u12970df7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1284&originWidth=1872&originalType=binary&ratio=1&rotation=0&showTitle=false&size=394075&status=done&style=none&taskId=ue80ad1de-1677-4017-a872-a6e8d8d49a0&title=&width=936" alt="image.png"><br>图中，虚线箭头表示的是主备关系，也就是A和A’互为主备， 从库B、C、D指向的是主库A。一主多从的设置，一般用于读写分离，主库负责所有的写入和一部分读，其他的读请求则由从库分担。<br>如果这个时候A宕机了，怎么办？</p>
+<h3 id="主备切换"><a href="#主备切换" class="headerlink" title="主备切换"></a>主备切换</h3><h4 id="基于位点的主备切换"><a href="#基于位点的主备切换" class="headerlink" title="基于位点的主备切换"></a>基于位点的主备切换</h4><p>当我们把节点B设置成节点A’的从库的时候，需要执行一条change master命令：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CHANGE MASTER <span class="keyword">TO</span> </span><br><span class="line">MASTER_HOST<span class="operator">=</span>$host_name </span><br><span class="line">MASTER_PORT<span class="operator">=</span>$port </span><br><span class="line">MASTER_USER<span class="operator">=</span>$user_name </span><br><span class="line">MASTER_PASSWORD<span class="operator">=</span>$password </span><br><span class="line">MASTER_LOG_FILE<span class="operator">=</span>$master_log_name </span><br><span class="line">MASTER_LOG_POS<span class="operator">=</span>$master_log_pos  </span><br></pre></td></tr></table></figure>
+<p>这个位点很难精确取到，只能取一个大概位置。为什么这么说呢？<br>考虑到切换过程中不能丢数据，所以我们找位点的时候，总是要找一个“稍微往前”的，然后再通过判断跳过那些在从库B上已经执行过的事务。<br>一种取同步位点的方法是这样的：</p>
+<ol>
+<li>等待新主库A’把中转日志（relay log）全部同步完成；</li>
+<li>在A’上执行show master status命令，得到当前A’上最新的File 和 Position；</li>
+<li>取原主库A故障的时刻T；</li>
+<li>用mysqlbinlog工具解析A’的File，得到T时刻的位点。</li>
+</ol>
+<p>如果A在宕机前把数据推送给了A’和B。那当A’切换成主库时，位点可能是最后一条数据的位点，但是B其实已经执行过了，在执行就会报错。所以需要忽略这些错误。</p>
+<h4 id="基于GTID的主备切换"><a href="#基于GTID的主备切换" class="headerlink" title="基于GTID的主备切换"></a>基于GTID的主备切换</h4><p><strong>GTID（Global Transaction Identifier，也就是全局事务ID）</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GTID<span class="operator">=</span>server_uuid:gno</span><br></pre></td></tr></table></figure>
+<p>其中：</p>
+<ul>
+<li>server_uuid是一个实例第一次启动时自动生成的，是一个全局唯一的值；</li>
+<li>gno是一个整数，初始值是1，每次提交事务的时候分配给这个事务，并加1。</li>
+</ul>
+<p><strong>GTID模式下的切换主库的语法</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CHANGE MASTER <span class="keyword">TO</span> </span><br><span class="line">MASTER_HOST<span class="operator">=</span>$host_name </span><br><span class="line">MASTER_PORT<span class="operator">=</span>$port </span><br><span class="line">MASTER_USER<span class="operator">=</span>$user_name </span><br><span class="line">MASTER_PASSWORD<span class="operator">=</span>$password </span><br><span class="line">master_auto_position<span class="operator">=</span><span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>其中，master_auto_position&#x3D;1就表示这个主备关系使用的是GTID协议。可以看到，前面让我们头疼不已的MASTER_LOG_FILE和MASTER_LOG_POS参数，已经不需要指定了。<br>我们把现在这个时刻，实例A’的GTID集合记为set_a，实例B的GTID集合记为set_b。接下来，我们就看看现在的主备切换逻辑。<br>我们在实例B上执行start slave命令，取binlog的逻辑是这样的：</p>
+<ol>
+<li>实例B指定主库A’，基于主备协议建立连接。</li>
+<li>实例B把set_b发给主库A’。</li>
+<li>实例A’算出set_a与set_b的差集，也就是所有存在于set_a，但是不存在于set_b的GITD的集合，判断A’本地是否包含了这个差集需要的所有binlog事务。<br>a. 如果不包含，表示A’已经把实例B需要的binlog给删掉了，直接返回错误；<br>b. 如果确认全部包含，A’从自己的binlog文件里面，找出第一个不在set_b的事务，发给B；</li>
+<li>之后就从这个事务开始，往后读文件，按顺序取binlog发给B去执行。</li>
+</ol>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本篇主要是剖析Mysql的主从同步。</p>
+<ol>
+<li>先从整体流程上看Mysql的同步过程。</li>
+<li>然后从具体的数据格式分析。</li>
+<li>接着分析主从的高可用，讲了两个核心问题，1是主从延迟，2是主备切换。</li>
+<li>主从延迟有两种策略，可靠性和可用性策略。一种并行复制的解决方案</li>
+<li>主备切换也有两种策略，位点和GTID</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/06/20/Spring%E7%9C%9F%E7%9A%84%E5%AE%8C%E5%85%A8%E8%A7%A3%E5%86%B3%E4%BA%86%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E5%90%97/" rel="prev" title="Spring真的完全解决了循环依赖吗">
+                  <i class="fa fa-chevron-left"></i> Spring真的完全解决了循环依赖吗
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments">
+    <script src="https://giscus.vercel.app/client.js"
+        data-repo="skitii/skitii" 
+        data-repo-id="R_kgDOGzU33Q" 
+        data-category="General"
+        data-category-id="DIC_kwDOGzU33c4CQdPc"
+        data-mapping="pathname" 
+        data-reactions-enabled="1" 
+        data-emit-metadata="1" 
+        data-theme="light"
+        data-lang="en"
+        crossorigin="anonymous"
+        data-input-position="bottom"
+        data-loading="eager"
+        async>
+    </script>
+  </div>
+  
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Skitii</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">32k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">29 分钟</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+<span id="sitetime"></span>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+		Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+		year - 作为date对象的年份，为4位年份值
+		month - 0-11之间的整数，做为date对象的月份
+		day - 1-31之间的整数，做为date对象的天数
+		hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+		minutes - 0-59之间的整数，做为date对象的分钟数
+		seconds - 0-59之间的整数，做为date对象的秒数
+		microseconds - 0-999之间的整数，做为date对象的毫秒数
+        */
+		var t1 = Date.UTC(2022,02,07,15,00,00); //北京时间2018-2-13 00:00:00
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" @Skitii 已安全提供服务 "+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒 💗";
+	}
+	siteTime();
+</script>
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script class="next-config" data-name="chatra" type="application/json">{"enable":true,"async":true,"id":"H8oixnws8SKYQkjBz"}</script>
+<script src="/js/third-party/chat/chatra.js"></script>
+<script async src="https://call.chatra.io/chatra.js"></script>
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":1}});</script></body>
+</html>
