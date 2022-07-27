@@ -2676,7 +2676,7 @@ hr {
   vertical-align: middle;
 }
 .links-of-author a::before {
-  background: #da69f5;
+  background: #3339f7;
   display: inline-block;
   margin-right: 3px;
   transform: translateY(-2px);
@@ -2701,4 +2701,8 @@ hr {
 }
 .sub-menu .menu-item {
   display: inline-block;
+}
+.giscus {
+  max-width: unset;
+  box-sizing: border-box;
 }
